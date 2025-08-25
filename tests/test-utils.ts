@@ -1,3 +1,10 @@
+import {
+  AbstractBestFitStripPack,
+  AbstractBestFitStripPackRotatable,
+  BestFitStripPack,
+  BestFitStripPackRotatable,
+} from '../src';
+
 function arraysAreIdentical(first: any[], second: any[]) {
   return (
     first.length === second.length &&
@@ -5,9 +12,53 @@ function arraysAreIdentical(first: any[], second: any[]) {
   );
 }
 
+export function isValidClassInstance(
+  instance: any,
+  instanceType: 'BestFitStripPack' | 'BestFitStripPackRotatable'
+) {
+  const propertyNames = Object.getOwnPropertyNames(instance).sort();
+
+  if (
+    !(
+      'object' === typeof instance &&
+      Object.getPrototypeOf(instance) !== Object.prototype &&
+      arraysAreIdentical(propertyNames, [
+        'heap',
+        'list',
+        'packedHeight',
+        'packedWidth',
+        'stripWidth',
+      ])
+    )
+  ) {
+    return false;
+  }
+
+  if (instanceType === 'BestFitStripPack') {
+    return (
+      instance instanceof BestFitStripPack &&
+      instance instanceof AbstractBestFitStripPack &&
+      Object(instance) instanceof BestFitStripPack &&
+      Object(instance) instanceof AbstractBestFitStripPack &&
+      Object.getPrototypeOf(instance) === BestFitStripPack.prototype &&
+      Object.getPrototypeOf(instance) !== AbstractBestFitStripPack.prototype
+    );
+  }
+
+  return (
+    instance instanceof BestFitStripPackRotatable &&
+    instance instanceof AbstractBestFitStripPackRotatable &&
+    Object(instance) instanceof BestFitStripPackRotatable &&
+    Object(instance) instanceof AbstractBestFitStripPackRotatable &&
+    Object.getPrototypeOf(instance) === BestFitStripPackRotatable.prototype &&
+    Object.getPrototypeOf(instance) !==
+      AbstractBestFitStripPackRotatable.prototype
+  );
+}
+
 export function isValidObjectInstance(
   instance: any,
-  objectType:
+  instanceType:
     | 'best-fit-strip-pack'
     | 'doubly-list'
     | 'doubly-list-node'
@@ -18,7 +69,7 @@ export function isValidObjectInstance(
     | 'placement-point'
     | 'placement-point-rotatable'
 ) {
-  if (objectType === 'min-heap') {
+  if (instanceType === 'min-heap') {
     if (!Array.isArray(instance)) {
       return false;
     }
@@ -33,11 +84,21 @@ export function isValidObjectInstance(
 
   const propertyNames = Object.getOwnPropertyNames(instance).sort();
 
-  if (objectType === 'doubly-list') {
+  if (instanceType === 'best-fit-strip-pack') {
+    return arraysAreIdentical(propertyNames, [
+      'heap',
+      'list',
+      'packedHeight',
+      'packedWidth',
+      'stripWidth',
+    ]);
+  }
+
+  if (instanceType === 'doubly-list') {
     return arraysAreIdentical(propertyNames, ['head', 'size', 'tail']);
   }
 
-  if (objectType === 'doubly-list-node') {
+  if (instanceType === 'doubly-list-node') {
     return arraysAreIdentical(propertyNames, [
       'heapNode',
       'next',
@@ -46,11 +107,11 @@ export function isValidObjectInstance(
     ]);
   }
 
-  if (objectType === 'doubly-list-node-value') {
+  if (instanceType === 'doubly-list-node-value') {
     return arraysAreIdentical(propertyNames, ['width', 'x']);
   }
 
-  if (objectType === 'fit-position') {
+  if (instanceType === 'fit-position') {
     return arraysAreIdentical(propertyNames, [
       'action',
       'firstNode',
@@ -60,30 +121,20 @@ export function isValidObjectInstance(
     ]);
   }
 
-  if (objectType === 'min-heap') {
+  if (instanceType === 'min-heap') {
     return arraysAreIdentical(propertyNames, ['indices', 'length']);
   }
 
-  if (objectType === 'min-heap-node') {
+  if (instanceType === 'min-heap-node') {
     return arraysAreIdentical(propertyNames, ['key', 'listNode']);
   }
 
-  if (objectType === 'placement-point') {
+  if (instanceType === 'placement-point') {
     return arraysAreIdentical(propertyNames, ['x', 'y']);
   }
 
-  if (objectType === 'placement-point-rotatable') {
+  if (instanceType === 'placement-point-rotatable') {
     return arraysAreIdentical(propertyNames, ['rotated', 'x', 'y']);
-  }
-
-  if (objectType === 'best-fit-strip-pack') {
-    return arraysAreIdentical(propertyNames, [
-      'heap',
-      'list',
-      'packedHeight',
-      'packedWidth',
-      'stripWidth',
-    ]);
   }
 
   return false;
