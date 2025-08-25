@@ -1,6 +1,6 @@
 {
   "name": "best-fit-strip-pack",
-  "version": "0.0.1",
+  "version": "0.5.0",
   "author": "Yiannis Stergiou <hello@styiannis.dev>",
   "license": "MIT",
   "repository": {
@@ -69,5 +69,9 @@
         "default": "./dist/cjs/index.js"
       }
     }
+  },
+  "dependencies": {
+    "abstract-linked-lists": "^1.0.5",
+    "addressable-binary-heaps": "^1.0.3"
   }
 }
