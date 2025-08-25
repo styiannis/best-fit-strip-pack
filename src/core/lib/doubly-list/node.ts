@@ -17,14 +17,6 @@ export function create<N extends IDoublyListNode>(
 }
 
 export function attachNext<N extends IDoublyListNode>(instance: N, node: N) {
-  // @note...
-  // if (node.previous) {
-  // }
-
-  // @note...
-  // if (node.next) {
-  // }
-
   if (instance.next) {
     instance.next.previous = node;
     node.next = instance.next;

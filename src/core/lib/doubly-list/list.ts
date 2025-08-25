@@ -14,29 +14,6 @@ export function clear<L extends IDoublyList>(instance: L) {
   return clearList(instance);
 }
 
-export function pushNode<L extends IDoublyList>(
-  instance: L,
-  node: NonNullable<L['head']>
-) {
-  return pushToList(instance, node);
-}
-
-// @note: The existence of the `node` in the provided list `instance` is not guaranteed.
-export function insertNextNode<L extends IDoublyList>(
-  instance: L,
-  node: NonNullable<L['head']>,
-  next: NonNullable<L['head']>
-) {
-  attachNext(node, next);
-
-  if (node === instance.tail) {
-    instance.tail = next;
-  }
-
-  instance.size++;
-}
-
-// @note: The existence of the `node` in the provided list `instance` is not guaranteed.
 export function detachNode<L extends IDoublyList>(
   instance: L,
   node: NonNullable<L['head']>
@@ -51,7 +28,28 @@ export function detachNode<L extends IDoublyList>(
 
   detach(node);
 
-  instance.size--;
+  instance.size -= 1;
 
   return node;
+}
+
+export function insertNextNode<L extends IDoublyList>(
+  instance: L,
+  node: NonNullable<L['head']>,
+  next: NonNullable<L['head']>
+) {
+  attachNext(node, next);
+
+  if (node === instance.tail) {
+    instance.tail = next;
+  }
+
+  instance.size += 1;
+}
+
+export function pushNode<L extends IDoublyList>(
+  instance: L,
+  node: NonNullable<L['head']>
+) {
+  return pushToList(instance, node);
 }

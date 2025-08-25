@@ -110,16 +110,6 @@ function findBestFitPositionRotatable<P extends IBestFitStripPack>(
     rotated: true,
   };
 
-  /**
-   * @todo: Recheck this alternative:
-   * ````
-   * return pos.y <= posRotated.y ? pos : posRotated;
-   * ````
-   * It is slow but achieves fairly low space wastage.
-   * + In "new" scripts, it works perfectly!
-   *
-   */
-
   return pos.y + height <= posRotated.y + width ? pos : posRotated;
 }
 
@@ -135,22 +125,15 @@ function getBestFitPosition<P extends IBestFitStripPack>(
     'remove-rest-nodes'
   );
 
-  // @note: Could this be omitted?
-  if (width === instance.stripWidth) {
-    return position;
-  }
-
   for (let i = 0, x = 1; i < instance.heap.length; i = x - 1) {
     x *= 2;
-    for (let j = i; j < instance.heap.length && j < x - 1; j++) {
+    for (let j = i; j < instance.heap.length && j < x - 1; j += 1) {
       const listNode = instance.heap[j].listNode as NonNullable<
         P['list']['head']
       >;
 
       if (listNode.heapNode.key <= position.y) {
         const currHeight = listNode.heapNode.key;
-
-        // @note: Unfortunately... he have to search for the first and last nodes...
 
         let first = listNode;
 
@@ -186,8 +169,6 @@ function getBestFitPosition<P extends IBestFitStripPack>(
         );
       }
     }
-
-    // @note: It would be nice to find a way to break the loop when the position is found
   }
 
   return position;
@@ -367,7 +348,9 @@ export function addInLine<P extends IBestFitStripPack>(
   height: number
 ) {
   const point = placementPoint.create(instance.packedWidth, 0);
+
   inLinePlacement(instance, width, height);
+
   return point;
 }
 
@@ -382,7 +365,9 @@ export function addInLineRotatable<P extends IBestFitStripPack>(
     0,
     rotated
   );
+
   inLinePlacement(instance, width, height);
+
   return point;
 }
 
