@@ -1,18 +1,19 @@
-import { BestFitStripPack, BestFitStripPackRotatable } from '../src';
-import { isValidClassInstance, isValidObjectInstance } from './test-utils';
+import { bestFitStripPack, bestFitStripPackRotatable } from '../../src/core';
+import { isValidObjectInstance } from '../tests-utils';
 
-describe('Classes', () => {
-  describe('Initialized instances', () => {
+describe('Core', () => {
+  describe('Initializing instances', () => {
     const stripWidth = 123;
 
     it.each([
-      ['BestFitStripPack', BestFitStripPack],
-      ['BestFitStripPackRotatable', BestFitStripPackRotatable],
-    ] as const)('%s', (instanceType, P) => {
-      const instance = new P(stripWidth);
-
+      ['bestFitStripPack', bestFitStripPack.create(stripWidth)],
+      [
+        'bestFitStripPackRotatable',
+        bestFitStripPackRotatable.create(stripWidth),
+      ],
+    ] as const)('%s', (_instanceType, instance) => {
       expect(
-        isValidClassInstance(instance, instanceType) &&
+        isValidObjectInstance(instance, 'best-fit-strip-pack') &&
           instance.packedHeight === 0 &&
           instance.packedWidth === 0 &&
           instance.stripWidth === stripWidth

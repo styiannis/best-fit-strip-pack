@@ -4,8 +4,8 @@ import {
   minHeap,
   placementPoint,
   placementPointRotatable,
-} from '../src/core/lib';
-import { isValidObjectInstance } from './test-utils';
+} from '../../src/core/lib';
+import { isValidObjectInstance } from '../tests-utils';
 
 describe('Core >> lib', () => {
   describe('Initializing instances', () => {
