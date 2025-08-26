@@ -11,79 +11,74 @@ type Rectangle = [number, number];
 /* ---------- // Helper functions ---------- */
 /* ----------------------------------------- */
 
-function insertRectanglesInLine(
+function insertAndConfirm(
+  instance: IBestFitStripPack,
+  [w, h]: Rectangle,
+  expected: { x: number; y: number }
+) {
+  expect(bestFitStripPack.insert(instance, w, h)).toStrictEqual(expected);
+}
+
+function insertAndConfirmRotatable(
+  instance: IBestFitStripPack,
+  [w, h]: Rectangle,
+  expected: { x: number; y: number; rotated: boolean }
+) {
+  expect(bestFitStripPackRotatable.insert(instance, w, h)).toStrictEqual(
+    expected
+  );
+}
+
+function insertInLineAndConfirm(
   instance: IBestFitStripPack,
   rectangles: Rectangle[]
 ) {
-  rectangles.reduce((sumWidth, [w, h]) => {
+  rectangles.reduce((totalWidth, [w, h]) => {
     const newPackedHeight = Math.max(instance.packedHeight, h);
 
-    validatedInsertion(instance, [w, h], { x: sumWidth, y: 0 });
+    insertAndConfirm(instance, [w, h], { x: totalWidth, y: 0 });
 
-    sumWidth += w;
+    totalWidth += w;
 
     expect(instance.packedHeight).toBe(newPackedHeight);
-    expect(instance.packedWidth).toBe(sumWidth);
+    expect(instance.packedWidth).toBe(totalWidth);
 
-    return sumWidth;
+    return totalWidth;
   }, 0);
 }
 
-function insertRectanglesInLineRotatable(
+function insertInLineAndConfirmRotatable(
   instance: IBestFitStripPack,
   rectangles: Rectangle[],
   rotated: boolean
 ) {
-  rectangles.reduce((sumWidth, [w, h]) => {
+  rectangles.reduce((totalWidth, [w, h]) => {
     const newPackedHeight = Math.max(instance.packedHeight, h);
 
-    validatedInsertionRotatable(instance, [w, h], {
-      x: sumWidth,
+    insertAndConfirmRotatable(instance, [w, h], {
+      x: totalWidth,
       y: 0,
       rotated,
     });
 
-    sumWidth += w;
+    totalWidth += w;
 
     expect(instance.packedHeight).toBe(newPackedHeight);
-    expect(instance.packedWidth).toBe(sumWidth);
+    expect(instance.packedWidth).toBe(totalWidth);
 
-    return sumWidth;
+    return totalWidth;
   }, 0);
-}
-
-function validatedInsertion(
-  instance: IBestFitStripPack,
-  [w, h]: Rectangle,
-  { x, y }: { x: number; y: number }
-) {
-  const point = bestFitStripPack.insert(instance, w, h);
-
-  expect(point.x).toBe(x);
-  expect(point.y).toBe(y);
-}
-
-function validatedInsertionRotatable(
-  instance: IBestFitStripPack,
-  [w, h]: Rectangle,
-  { x, y, rotated }: { x: number; y: number; rotated: boolean }
-) {
-  const point = bestFitStripPackRotatable.insert(instance, w, h);
-
-  expect(point.x).toBe(x);
-  expect(point.y).toBe(y);
-  expect(point.rotated).toBe(rotated);
 }
 
 function validateListNodeData(
   listNode: IDoublyListNode,
-  { x, w, h }: { x: number; w: number; h: number }
+  expected: { x: number; w: number; h: number }
 ) {
   expect({
     x: listNode.value.x,
     w: listNode.value.width,
-    h: listNode.heapNode ? listNode.heapNode.key : -1,
-  }).toStrictEqual({ x, w, h });
+    h: listNode.heapNode ? listNode.heapNode.key : Infinity,
+  }).toStrictEqual(expected);
 }
 
 /* ----------------------------------------- */
@@ -121,23 +116,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [50, 15];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
           });
@@ -211,23 +206,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [50, 20];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
           });
@@ -294,23 +289,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [5, 150];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[0][0],
             y: rectangles[1][1],
             rotated: true,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x:
               rectangles[0][0] +
               rectangles[1][0] +
@@ -333,23 +328,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [200, 15];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
           });
@@ -415,23 +410,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [200, 20];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
           });
@@ -489,23 +484,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [200, 30];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
           });
@@ -562,23 +557,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [200, 20];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0] + rectangles[2][0],
             y: rectangles[2][1],
           });
@@ -643,23 +638,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [600, 15];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0],
             y: rectangles[3][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0],
             y: rectangles[3][1],
           });
@@ -709,23 +704,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [600, 20];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0],
             y: rectangles[3][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0],
             y: rectangles[3][1],
           });
@@ -759,23 +754,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [600, 10];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0],
             y: rectangles[3][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0],
             y: rectangles[3][1],
           });
@@ -817,23 +812,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [600, 20];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[1][0],
             y: rectangles[3][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0],
             y: rectangles[3][1],
           });
@@ -867,7 +862,7 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [550, 250];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(
             rectangles.reduce((acc, [width]) => acc + width, 0)
@@ -875,13 +870,13 @@ describe('Best-fit positioning', () => {
 
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[0][0] + rectangles[1][0],
             y: rectangles[3][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(
             rectangles.reduce((acc, [width]) => acc + width, 0)
@@ -889,7 +884,7 @@ describe('Best-fit positioning', () => {
 
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[0][0] + rectangles[1][0],
             y: rectangles[3][1],
           });
@@ -937,7 +932,7 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [570, 80];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(
             rectangles.reduce((acc, [width]) => acc + width, 0)
@@ -945,13 +940,13 @@ describe('Best-fit positioning', () => {
 
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[0][0] + rectangles[1][0],
             y: rectangles[3][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(
             rectangles.reduce((acc, [width]) => acc + width, 0)
@@ -959,7 +954,7 @@ describe('Best-fit positioning', () => {
 
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[0][0] + rectangles[1][0],
             y: rectangles[3][1],
           });
@@ -999,7 +994,7 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [900, 250];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(
             rectangles.reduce((acc, [width]) => acc + width, 0)
@@ -1007,13 +1002,13 @@ describe('Best-fit positioning', () => {
 
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: 0,
             y: rectangles[0][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(
             rectangles.reduce((acc, [width]) => acc + width, 0)
@@ -1021,7 +1016,7 @@ describe('Best-fit positioning', () => {
 
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: 0,
             y: rectangles[0][1],
           });
@@ -1067,23 +1062,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [500, 15];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[0][0],
             y: rectangles[3][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[1][0],
             y: rectangles[3][1],
           });
@@ -1145,23 +1140,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [500, 20];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: rectangles[0][0],
             y: rectangles[3][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: rectangles[0][0],
             y: rectangles[3][1],
           });
@@ -1215,23 +1210,23 @@ describe('Best-fit positioning', () => {
         const extraRect: [number, number] = [900, 15];
 
         if (instanceType === 'bestFitStripPackRotatable') {
-          insertRectanglesInLineRotatable(instance, rectangles, false);
+          insertInLineAndConfirmRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertionRotatable(instance, extraRect, {
+          insertAndConfirmRotatable(instance, extraRect, {
             x: 0,
             y: rectangles[0][1],
             rotated: false,
           });
         } else {
-          insertRectanglesInLine(instance, rectangles);
+          insertInLineAndConfirm(instance, rectangles);
 
           expect(instance.packedWidth).toBe(stripWidth);
           expect(instance.list.size).toBe(rectangles.length);
 
-          validatedInsertion(instance, extraRect, {
+          insertAndConfirm(instance, extraRect, {
             x: 0,
             y: rectangles[0][1],
           });

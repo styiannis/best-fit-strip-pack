@@ -147,16 +147,18 @@ function getBestFitPosition<P extends IBestFitStripPack>(
 
         let last = first;
         let maxHeight = first.heapNode.key;
-        let sumWidth = first.value.width;
+        let totalWidth = first.value.width;
 
         for (
           let next = first.next;
-          sumWidth < width && next?.heapNode && next.heapNode.key <= currHeight;
+          totalWidth < width &&
+          next?.heapNode &&
+          next.heapNode.key <= currHeight;
           next = next.next
         ) {
           last = next;
           maxHeight = Math.max(maxHeight, next.heapNode.key);
-          sumWidth += next.value.width;
+          totalWidth += next.value.width;
         }
 
         validateBestFitPosition(
@@ -278,9 +280,10 @@ function validateBestFitPosition<P extends IBestFitStripPack>(
     return;
   }
 
-  const sumWidth = lastNode.value.x + lastNode.value.width - firstNode.value.x;
+  const totalWidth =
+    lastNode.value.x + lastNode.value.width - firstNode.value.x;
 
-  if (width <= sumWidth) {
+  if (width <= totalWidth) {
     position.firstNode = firstNode;
     position.lastNode = lastNode;
     position.x = x;
@@ -288,7 +291,7 @@ function validateBestFitPosition<P extends IBestFitStripPack>(
     position.action =
       firstNode === lastNode
         ? 'first-node-only'
-        : width === sumWidth
+        : width === totalWidth
         ? 'remove-rest-nodes'
         : 'last-node-split';
 
