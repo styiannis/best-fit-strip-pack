@@ -11,7 +11,7 @@ describe('Core', () => {
         'bestFitStripPackRotatable',
         bestFitStripPackRotatable.create(stripWidth),
       ],
-    ] as const)('%s', (_instanceType, instance) => {
+    ] as const)('%s', (_, instance) => {
       expect(
         isValidObjectInstance(instance, 'best-fit-strip-pack') &&
           instance.packedHeight === 0 &&

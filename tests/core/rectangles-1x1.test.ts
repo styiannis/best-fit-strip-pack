@@ -1,25 +1,25 @@
-import { BestFitStripPack, BestFitStripPackRotatable } from '../../src';
-import { isValidClassInstance } from '../tests-utils';
+import { bestFitStripPack, bestFitStripPackRotatable } from '../../src/core';
+import { isValidObjectInstance } from '../tests-utils';
 
 describe.each([
-  ['BestFitStripPack', BestFitStripPack],
-  ['BestFitStripPackRotatable', BestFitStripPackRotatable],
-] as const)('(%s) Insert 1x1 rectangles', (instanceType, P) => {
+  ['bestFitStripPack', bestFitStripPack],
+  ['bestFitStripPackRotatable', bestFitStripPackRotatable],
+] as const)('(%s) Insert 1x1 rectangles', (_, bfsp) => {
   const width = 1;
   const height = 1;
-  const length = 99;
+  const length = 100;
 
   it('Packed rectangles in single column', () => {
     const stripWidth = 1;
-    const instance = new P(stripWidth);
+    const instance = bfsp.create(stripWidth);
 
     for (let i = 0; i < length; i++) {
-      const { x, y } = instance.insert(width, height);
+      const { x, y } = bfsp.insert(instance, width, height);
       expect(x === 0 && y === i).toBe(true);
     }
 
     expect(
-      isValidClassInstance(instance, instanceType) &&
+      isValidObjectInstance(instance, 'best-fit-strip-pack') &&
         instance.heap !== null &&
         instance.list !== null &&
         instance.list.size === 1 &&
@@ -34,21 +34,16 @@ describe.each([
   it('Packed rectangles in two columns maximum', () => {
     const perLine = 3;
     const stripWidth = perLine * width;
-    const instance = new P(stripWidth);
+    const instance = bfsp.create(stripWidth);
 
     for (let i = 0; i < length; i++) {
-      const { x, y } = instance.insert(width, height);
+      const { x, y } = bfsp.insert(instance, width, height);
 
       const lines =
         Math.floor((i + 1) / perLine) + (0 === (i + 1) % perLine ? 0 : 1);
 
       expect(instance.packedHeight).toBe(lines);
-
-      if (i < perLine) {
-        expect(instance.packedWidth).toBe(i + 1);
-      } else {
-        expect(instance.packedWidth).toBe(stripWidth);
-      }
+      expect(instance.packedWidth).toBe(i < perLine ? i + 1 : stripWidth);
 
       const divFloor = Math.floor(i / perLine);
       const divRest = i % perLine;
@@ -64,7 +59,6 @@ describe.each([
       }
 
       expect(instance.list.head?.heapNode.key).toBe(lines);
-
       expect(instance.heap.length).toBe(instance.list.size);
     }
   });

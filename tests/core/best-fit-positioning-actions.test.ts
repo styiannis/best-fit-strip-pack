@@ -1,9 +1,9 @@
 import {
-  BestFitStripPack,
-  BestFitStripPackRotatable,
-  AbstractBestFitStripPackRotatable,
+  bestFitStripPack,
+  bestFitStripPackRotatable,
+  IBestFitStripPack,
   IDoublyListNode,
-} from '../../src';
+} from '../../src/core';
 
 type Rectangle = [number, number];
 
@@ -12,21 +12,25 @@ type Rectangle = [number, number];
 /* ----------------------------------------- */
 
 function insertRectanglesInLine(
-  instance: BestFitStripPack,
+  instance: IBestFitStripPack,
   rectangles: Rectangle[]
 ) {
-  let sumWidth = 0;
-  rectangles.forEach(([w, h]) => {
+  rectangles.reduce((sumWidth, [w, h]) => {
     const newPackedHeight = Math.max(instance.packedHeight, h);
+
     validatedInsertion(instance, [w, h], { x: sumWidth, y: 0 });
+
     sumWidth += w;
+
     expect(instance.packedHeight).toBe(newPackedHeight);
     expect(instance.packedWidth).toBe(sumWidth);
-  });
+
+    return sumWidth;
+  }, 0);
 }
 
 function insertRectanglesInLineRotatable(
-  instance: BestFitStripPackRotatable,
+  instance: IBestFitStripPack,
   rectangles: Rectangle[],
   rotated: boolean
 ) {
@@ -49,22 +53,22 @@ function insertRectanglesInLineRotatable(
 }
 
 function validatedInsertion(
-  instance: BestFitStripPack,
+  instance: IBestFitStripPack,
   [w, h]: Rectangle,
   { x, y }: { x: number; y: number }
 ) {
-  const point = instance.insert(w, h);
+  const point = bestFitStripPack.insert(instance, w, h);
 
   expect(point.x).toBe(x);
   expect(point.y).toBe(y);
 }
 
 function validatedInsertionRotatable(
-  instance: BestFitStripPackRotatable,
+  instance: IBestFitStripPack,
   [w, h]: Rectangle,
   { x, y, rotated }: { x: number; y: number; rotated: boolean }
 ) {
-  const point = instance.insert(w, h);
+  const point = bestFitStripPackRotatable.insert(instance, w, h);
 
   expect(point.x).toBe(x);
   expect(point.y).toBe(y);
@@ -88,16 +92,15 @@ function validateListNodeData(
 
 describe('Best-fit positioning', () => {
   describe.each([
-    ['BestFitStripPack', BestFitStripPack],
-    ['BestFitStripPackRotatable', BestFitStripPackRotatable],
-  ] as const)('%s', (_, P) => {
+    ['bestFitStripPack', bestFitStripPack],
+    ['bestFitStripPackRotatable', bestFitStripPackRotatable],
+  ] as const)('%s', (instanceType, bfsp) => {
     describe('Action: First node only', () => {
       const stripWidth = 1000;
-      const instance = new P(stripWidth);
+      const instance = bfsp.create(stripWidth);
 
       afterEach(() => {
-        instance.reset();
-
+        bfsp.reset(instance);
         expect(instance.packedHeight).toBe(0);
         expect(instance.packedWidth).toBe(0);
         expect(instance.list.size).toBe(0);
@@ -117,7 +120,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [50, 15];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -207,7 +210,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [50, 20];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -279,9 +282,6 @@ describe('Best-fit positioning', () => {
       });
 
       it('Split the node + Choose placement position based on "x" coordinate', () => {
-        const stripWidth = 1000;
-        const instance = new P(stripWidth);
-
         const rectangles: Rectangle[] = [
           [100, 90],
           [200, 20],
@@ -293,7 +293,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [5, 150];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -332,7 +332,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [200, 15];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -414,7 +414,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [200, 20];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -488,7 +488,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [200, 30];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -561,7 +561,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [200, 20];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -619,11 +619,10 @@ describe('Best-fit positioning', () => {
 
     describe('Action: Remove rest nodes', () => {
       const stripWidth = 1000;
-      const instance = new P(stripWidth);
+      const instance = bfsp.create(stripWidth);
 
       afterEach(() => {
-        instance.reset();
-
+        bfsp.reset(instance);
         expect(instance.packedHeight).toBe(0);
         expect(instance.packedWidth).toBe(0);
         expect(instance.list.size).toBe(0);
@@ -643,7 +642,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [600, 15];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -709,7 +708,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [600, 20];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -759,7 +758,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [600, 10];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -817,7 +816,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [600, 20];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -867,7 +866,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [550, 250];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(
@@ -937,7 +936,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [570, 80];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(
@@ -999,7 +998,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [900, 250];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(
@@ -1044,11 +1043,10 @@ describe('Best-fit positioning', () => {
 
     describe('Action: Split last node', () => {
       const stripWidth = 1000;
-      const instance = new P(stripWidth);
+      const instance = bfsp.create(stripWidth);
 
       afterEach(() => {
-        instance.reset();
-
+        bfsp.reset(instance);
         expect(instance.packedHeight).toBe(0);
         expect(instance.packedWidth).toBe(0);
         expect(instance.list.size).toBe(0);
@@ -1068,7 +1066,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [500, 15];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -1146,7 +1144,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [500, 20];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
@@ -1216,7 +1214,7 @@ describe('Best-fit positioning', () => {
 
         const extraRect: [number, number] = [900, 15];
 
-        if (instance instanceof AbstractBestFitStripPackRotatable) {
+        if (instanceType === 'bestFitStripPackRotatable') {
           insertRectanglesInLineRotatable(instance, rectangles, false);
 
           expect(instance.packedWidth).toBe(stripWidth);
