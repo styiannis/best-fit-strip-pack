@@ -3,7 +3,7 @@ import {
   AbstractBestFitStripPackRotatable,
   BestFitStripPack,
   BestFitStripPackRotatable,
-} from '../src';
+} from '../src/classes';
 
 function arraysAreIdentical(first: any[], second: any[]) {
   return (
@@ -22,13 +22,7 @@ export function isValidClassInstance(
     !(
       'object' === typeof instance &&
       Object.getPrototypeOf(instance) !== Object.prototype &&
-      arraysAreIdentical(propertyNames, [
-        'heap',
-        'list',
-        'packedHeight',
-        'packedWidth',
-        'stripWidth',
-      ])
+      arraysAreIdentical(propertyNames, [])
     )
   ) {
     return false;

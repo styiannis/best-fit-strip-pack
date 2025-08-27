@@ -1,28 +1,31 @@
-import { insert, reset } from '../core/best-fit-strip-pack-rotatable';
-import { IBestFitStripPack, IDoublyList, IMinHeap } from '../core';
-import { doublyList, minHeap } from '../core/lib';
-import { validateStripWidth } from '../core/validators';
+import { bestFitStripPackRotatable, IBestFitStripPack } from '../core';
 import { AbstractBestFitStripPackRotatable } from './abstract';
 
-export class BestFitStripPackRotatable
-  extends AbstractBestFitStripPackRotatable
-  implements IBestFitStripPack
-{
-  heap: IMinHeap = minHeap.heap.create();
-  list: IDoublyList = doublyList.list.create();
-  packedHeight = 0;
-  packedWidth = 0;
+export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable {
+  readonly #packer: IBestFitStripPack;
 
-  constructor(public stripWidth: number) {
+  constructor(stripWidth: number) {
     super();
-    validateStripWidth(stripWidth);
+    this.#packer = bestFitStripPackRotatable.create(stripWidth);
+  }
+
+  get packedHeight() {
+    return this.#packer.packedHeight;
+  }
+
+  get packedWidth() {
+    return this.#packer.packedWidth;
+  }
+
+  get stripWidth() {
+    return this.#packer.stripWidth;
   }
 
   insert(width: number, height: number) {
-    return insert(this, width, height);
+    return bestFitStripPackRotatable.insert(this.#packer, width, height);
   }
 
   reset() {
-    return reset(this);
+    return bestFitStripPackRotatable.reset(this.#packer);
   }
 }
