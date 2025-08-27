@@ -1,8 +1,8 @@
 import { BestFitStripPack, BestFitStripPackRotatable } from '../../src';
 import { isValidClassInstance } from '../tests-utils';
 
-describe('Classes', () => {
-  describe('Initialized instances', () => {
+describe('classes', () => {
+  describe('Initializing classes instances', () => {
     const stripWidth = 123;
 
     it.each([

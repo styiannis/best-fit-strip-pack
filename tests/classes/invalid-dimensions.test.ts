@@ -1,11 +1,11 @@
 import { BestFitStripPack, BestFitStripPackRotatable } from '../../src';
 
-describe('Invalid rectangles dimensions', () => {
+describe('Invalid strip width value', () => {
   describe.each([
     ['BestFitStripPack', BestFitStripPack],
     ['BestFitStripPackRotatable', BestFitStripPackRotatable],
   ] as const)('%s', (_, BFSP) => {
-    it('Strip width value is not a number', () => {
+    it('The strip width value is not numerical', () => {
       const stripWidth = 'a';
 
       // @ts-expect-error
@@ -17,7 +17,7 @@ describe('Invalid rectangles dimensions', () => {
       );
     });
 
-    it('Strip width value is 0', () => {
+    it('The strip width value is 0', () => {
       const stripWidth = 0;
 
       expect(() => new BFSP(stripWidth)).toThrow(RangeError);
@@ -26,7 +26,7 @@ describe('Invalid rectangles dimensions', () => {
       );
     });
 
-    it('Strip width value is less than 0', () => {
+    it('The strip width value is less than 0', () => {
       const stripWidth = -4;
 
       expect(() => new BFSP(stripWidth)).toThrow(RangeError);
@@ -34,8 +34,15 @@ describe('Invalid rectangles dimensions', () => {
         `Strip width value (${stripWidth}) should be greater than 0.`
       );
     });
+  });
+});
 
-    it('Width value is not a number', () => {
+describe('Invalid rectangle dimensions', () => {
+  describe.each([
+    ['BestFitStripPack', BestFitStripPack],
+    ['BestFitStripPackRotatable', BestFitStripPackRotatable],
+  ] as const)('%s', (_, BFSP) => {
+    it('The width value is not numerical', () => {
       const stripWidth = 1000;
       const rectangle = { width: 'a', height: 99 };
       const instance = new BFSP(stripWidth);
@@ -51,7 +58,7 @@ describe('Invalid rectangles dimensions', () => {
       );
     });
 
-    it('Height value is not a number', () => {
+    it('The height value is not numerical', () => {
       const stripWidth = 1000;
       const rectangle = { width: 88, height: 'b' };
       const instance = new BFSP(stripWidth);
@@ -67,7 +74,7 @@ describe('Invalid rectangles dimensions', () => {
       );
     });
 
-    it('The values of both dimensions are not numbers', () => {
+    it('The values of both dimensions are not numerical', () => {
       const stripWidth = 1000;
       const rectangle = { width: 'c', height: 'd' };
       const instance = new BFSP(stripWidth);
@@ -83,7 +90,7 @@ describe('Invalid rectangles dimensions', () => {
       );
     });
 
-    it('Width value is 0', () => {
+    it('The width value is 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: 0, height: 99 };
       const instance = new BFSP(stripWidth);
@@ -96,7 +103,7 @@ describe('Invalid rectangles dimensions', () => {
       );
     });
 
-    it('Height value is 0', () => {
+    it('The height value is 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: 88, height: 0 };
       const instance = new BFSP(stripWidth);
@@ -122,7 +129,7 @@ describe('Invalid rectangles dimensions', () => {
       );
     });
 
-    it('Width value is less than 0', () => {
+    it('The width value is less than 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: -12, height: 99 };
       const instance = new BFSP(stripWidth);
@@ -135,7 +142,7 @@ describe('Invalid rectangles dimensions', () => {
       );
     });
 
-    it('Height value is less than 0', () => {
+    it('The height value is less than 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: 88, height: -23 };
       const instance = new BFSP(stripWidth);
@@ -163,9 +170,9 @@ describe('Invalid rectangles dimensions', () => {
   });
 });
 
-describe('Rectangles dimensions that exceed the strip width', () => {
+describe('Rectangles with dimensions that exceed the width of the strip', () => {
   describe('BestFitStripPack', () => {
-    it('Width value is greater than strip width', () => {
+    it('The width is greater than the width of the strip', () => {
       const stripWidth = 1000;
       const rectangle = { width: stripWidth + 1, height: 3 };
       const instance = new BestFitStripPack(stripWidth);
@@ -178,7 +185,7 @@ describe('Rectangles dimensions that exceed the strip width', () => {
       );
     });
 
-    it('The values of both dimensions are greater than strip width', () => {
+    it('Both dimensions are greater than the width of the strip', () => {
       const stripWidth = 1000;
       const rectangle = { width: stripWidth + 1, height: stripWidth + 3 };
       const instance = new BestFitStripPack(stripWidth);
@@ -193,7 +200,7 @@ describe('Rectangles dimensions that exceed the strip width', () => {
   });
 
   describe('BestFitStripPackRotatable', () => {
-    it('The values of both dimensions are greater than strip width', () => {
+    it('Both dimensions are greater than the width of the strip', () => {
       const stripWidth = 1000;
       const rectangle = { width: stripWidth + 1, height: stripWidth + 3 };
       const instance = new BestFitStripPackRotatable(stripWidth);

@@ -2,8 +2,8 @@ import {
   bestFitStripPack,
   bestFitStripPackRotatable,
   IBestFitStripPack,
-  IDoublyListNode,
 } from '../../src/core';
+import { IDoublyListNode } from '../../src/core/lib';
 
 type Rectangle = [number, number];
 

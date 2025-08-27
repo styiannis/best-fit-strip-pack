@@ -31,7 +31,7 @@ describe.each([
     expect(instance.heap.length).toBe(instance.list.size);
   });
 
-  it('Packed rectangles in two columns maximum', () => {
+  it('Packed rectangles in two columns at most', () => {
     const perLine = 3;
     const stripWidth = perLine * width;
     const instance = bfsp.create(stripWidth);

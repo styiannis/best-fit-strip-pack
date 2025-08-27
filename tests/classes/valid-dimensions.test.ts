@@ -1,6 +1,6 @@
 import { BestFitStripPack, BestFitStripPackRotatable } from '../../src';
 
-describe('Insert rectangles with dimensions that exceed the strip width', () => {
+describe('Rectangles with dimensions that exceed the width of the strip', () => {
   const stripWidth = 1000;
 
   describe('BestFitStripPack', () => {
@@ -13,7 +13,7 @@ describe('Insert rectangles with dimensions that exceed the strip width', () => 
       expect(instance.stripWidth).toBe(stripWidth);
     });
 
-    it('Height value is greater than strip width', () => {
+    it('The value of height is greater than the width of the strip', () => {
       const rectangle = { width: 1, height: stripWidth + 3 };
       const point = instance.insert(rectangle.width, rectangle.height);
       expect(point.x).toBe(0);
@@ -33,7 +33,7 @@ describe('Insert rectangles with dimensions that exceed the strip width', () => 
       expect(instance.stripWidth).toBe(stripWidth);
     });
 
-    it('Width value is greater than strip width >> Insert in-line', () => {
+    it('The value of width is greater than the width of the strip >> Insert in-line', () => {
       const rectangle = { width: stripWidth + 1, height: 3 };
       const point = instance.insert(rectangle.width, rectangle.height);
       expect(point.x).toBe(0);
@@ -43,7 +43,7 @@ describe('Insert rectangles with dimensions that exceed the strip width', () => 
       expect(instance.packedHeight).toBe(rectangle.width);
     });
 
-    it('Width value is greater than strip width >> Insert best-fit', () => {
+    it('The value of width is greater than the width of the strip >> Insert best-fit', () => {
       const rectangles = [
         { width: stripWidth - 1, height: 1 },
         { width: stripWidth + 1, height: 3 },
@@ -70,7 +70,7 @@ describe('Insert rectangles with dimensions that exceed the strip width', () => 
       );
     });
 
-    it('Height value is greater than strip width >> Insert in-line', () => {
+    it('The value of height is greater than the width of the strip >> Insert in-line', () => {
       const rectangle = { width: 1, height: stripWidth + 3 };
       const point = instance.insert(rectangle.width, rectangle.height);
       expect(point.x).toBe(0);
@@ -80,7 +80,7 @@ describe('Insert rectangles with dimensions that exceed the strip width', () => 
       expect(instance.packedHeight).toBe(rectangle.height);
     });
 
-    it('Height value is greater than strip width >> Insert best-fit', () => {
+    it('The value of height is greater than the width of the strip >> Insert best-fit', () => {
       const rectangles = [
         { width: stripWidth - 1, height: 1 },
         { width: 3, height: stripWidth + 1 },
@@ -106,8 +106,23 @@ describe('Insert rectangles with dimensions that exceed the strip width', () => 
         rectangles[0].height + rectangles[1].height
       );
     });
+  });
+});
 
-    it('Width value is greater than height >> Rotate >> Insert in-line', () => {
+describe('Rectangles with a greater width than height', () => {
+  const stripWidth = 1000;
+
+  describe('BestFitStripPackRotatable', () => {
+    const instance = new BestFitStripPackRotatable(stripWidth);
+
+    afterEach(() => {
+      instance.reset();
+      expect(instance.packedHeight).toBe(0);
+      expect(instance.packedWidth).toBe(0);
+      expect(instance.stripWidth).toBe(stripWidth);
+    });
+
+    it('Rotate >> Insert in-line', () => {
       const rectangles = [
         { width: stripWidth - 1, height: 3 },
         { width: stripWidth - 5, height: 1 },
@@ -133,8 +148,23 @@ describe('Insert rectangles with dimensions that exceed the strip width', () => 
         rectangles[0].width + rectangles[1].height
       );
     });
+  });
+});
 
-    it('Height value is greater than width >> Insert in-line', () => {
+describe('Rectangles with a greater height than width', () => {
+  const stripWidth = 1000;
+
+  describe('BestFitStripPackRotatable', () => {
+    const instance = new BestFitStripPackRotatable(stripWidth);
+
+    afterEach(() => {
+      instance.reset();
+      expect(instance.packedHeight).toBe(0);
+      expect(instance.packedWidth).toBe(0);
+      expect(instance.stripWidth).toBe(stripWidth);
+    });
+
+    it('Insert in-line', () => {
       const rectangles = [
         { width: stripWidth - 30, height: 4 },
         { width: 10, height: 45 },
@@ -158,7 +188,7 @@ describe('Insert rectangles with dimensions that exceed the strip width', () => 
       );
     });
 
-    it('Height value is greater than width >> Rotate >> Insert in-line', () => {
+    it('Rotate >> Insert in-line', () => {
       const rectangles = [
         { width: stripWidth - 30, height: 4 },
         { width: 15, height: 20 },
