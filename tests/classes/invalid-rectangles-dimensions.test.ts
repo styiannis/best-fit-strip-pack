@@ -4,15 +4,15 @@ describe('Invalid rectangles dimensions', () => {
   describe.each([
     ['BestFitStripPack', BestFitStripPack],
     ['BestFitStripPackRotatable', BestFitStripPackRotatable],
-  ] as const)('%s', (_, P) => {
+  ] as const)('%s', (_, BFSP) => {
     it('Strip width value is not a number', () => {
       const stripWidth = 'a';
 
       // @ts-expect-error
-      expect(() => new P(stripWidth)).toThrow(TypeError);
+      expect(() => new BFSP(stripWidth)).toThrow(TypeError);
 
       // @ts-expect-error
-      expect(() => new P(stripWidth)).toThrow(
+      expect(() => new BFSP(stripWidth)).toThrow(
         `Strip width (${stripWidth}) should be numerical value.`
       );
     });
@@ -20,8 +20,8 @@ describe('Invalid rectangles dimensions', () => {
     it('Strip width value is 0', () => {
       const stripWidth = 0;
 
-      expect(() => new P(stripWidth)).toThrow(RangeError);
-      expect(() => new P(stripWidth)).toThrow(
+      expect(() => new BFSP(stripWidth)).toThrow(RangeError);
+      expect(() => new BFSP(stripWidth)).toThrow(
         `Strip width value (${stripWidth}) should be greater than 0.`
       );
     });
@@ -29,8 +29,8 @@ describe('Invalid rectangles dimensions', () => {
     it('Strip width value is less than 0', () => {
       const stripWidth = -4;
 
-      expect(() => new P(stripWidth)).toThrow(RangeError);
-      expect(() => new P(stripWidth)).toThrow(
+      expect(() => new BFSP(stripWidth)).toThrow(RangeError);
+      expect(() => new BFSP(stripWidth)).toThrow(
         `Strip width value (${stripWidth}) should be greater than 0.`
       );
     });
@@ -38,7 +38,7 @@ describe('Invalid rectangles dimensions', () => {
     it('Width value is not a number', () => {
       const stripWidth = 1000;
       const rectangle = { width: 'a', height: 99 };
-      const instance = new P(stripWidth);
+      const instance = new BFSP(stripWidth);
 
       // @ts-expect-error
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
@@ -54,7 +54,7 @@ describe('Invalid rectangles dimensions', () => {
     it('Height value is not a number', () => {
       const stripWidth = 1000;
       const rectangle = { width: 88, height: 'b' };
-      const instance = new P(stripWidth);
+      const instance = new BFSP(stripWidth);
 
       // @ts-expect-error
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
@@ -70,7 +70,7 @@ describe('Invalid rectangles dimensions', () => {
     it('The values of both dimensions are not numbers', () => {
       const stripWidth = 1000;
       const rectangle = { width: 'c', height: 'd' };
-      const instance = new P(stripWidth);
+      const instance = new BFSP(stripWidth);
 
       // @ts-expect-error
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
@@ -86,7 +86,7 @@ describe('Invalid rectangles dimensions', () => {
     it('Width value is 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: 0, height: 99 };
-      const instance = new P(stripWidth);
+      const instance = new BFSP(stripWidth);
 
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
         RangeError
@@ -99,7 +99,7 @@ describe('Invalid rectangles dimensions', () => {
     it('Height value is 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: 88, height: 0 };
-      const instance = new P(stripWidth);
+      const instance = new BFSP(stripWidth);
 
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
         RangeError
@@ -112,7 +112,7 @@ describe('Invalid rectangles dimensions', () => {
     it('The values of both dimensions are 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: 0, height: 0 };
-      const instance = new P(stripWidth);
+      const instance = new BFSP(stripWidth);
 
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
         RangeError
@@ -125,7 +125,7 @@ describe('Invalid rectangles dimensions', () => {
     it('Width value is less than 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: -12, height: 99 };
-      const instance = new P(stripWidth);
+      const instance = new BFSP(stripWidth);
 
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
         RangeError
@@ -138,7 +138,7 @@ describe('Invalid rectangles dimensions', () => {
     it('Height value is less than 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: 88, height: -23 };
-      const instance = new P(stripWidth);
+      const instance = new BFSP(stripWidth);
 
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
         RangeError
@@ -151,7 +151,7 @@ describe('Invalid rectangles dimensions', () => {
     it('The values of both dimensions are less than 0', () => {
       const stripWidth = 1000;
       const rectangle = { width: -11, height: -33 };
-      const instance = new P(stripWidth);
+      const instance = new BFSP(stripWidth);
 
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
         RangeError

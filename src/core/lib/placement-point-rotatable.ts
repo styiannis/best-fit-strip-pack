@@ -1,4 +1,4 @@
-import { IPlacementPointRotatable } from '../types';
+import { IPlacementPointRotatable } from './types';
 
 export function create<T extends IPlacementPointRotatable>(
   x: T['x'],

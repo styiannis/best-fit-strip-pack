@@ -1,14 +1,14 @@
 import {
-  create as createNode,
-  detach as detachNode,
+  create as nodeCreate,
+  detach as nodeDetach,
 } from 'abstract-linked-lists/doubly-linked-list/node';
-import { IDoublyListNode } from '../../types';
+import { IDoublyListNode } from '../types';
 
 export function create<N extends IDoublyListNode>(
   value: N['value'],
   heapNode: N['heapNode']
 ) {
-  const instance = createNode<N>();
+  const instance = nodeCreate<N>();
 
   instance.value = value;
   instance.heapNode = heapNode;
@@ -27,5 +27,5 @@ export function attachNext<N extends IDoublyListNode>(instance: N, node: N) {
 }
 
 export function detach<N extends IDoublyListNode>(instance: N) {
-  return detachNode(instance);
+  return nodeDetach(instance);
 }

@@ -1,4 +1,4 @@
-import { IPlacementPoint, IPlacementPointRotatable } from '../core';
+import { IPlacementPoint, IPlacementPointRotatable } from '../core/lib';
 
 export abstract class AbstractBestFitStripPack {
   abstract get packedHeight(): number;

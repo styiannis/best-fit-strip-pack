@@ -1,17 +1,15 @@
 import {
   doublyList,
   fitPosition,
-  minHeap,
-  placementPoint,
-  placementPointRotatable,
-} from './lib';
-import {
   IDoublyListNode,
   IFitPosition,
   IFitPositionRotatable,
   IMinHeapNode,
-  IBestFitStripPack,
-} from './types';
+  minHeap,
+  placementPoint,
+  placementPointRotatable,
+} from './lib';
+import { IBestFitStripPack } from './types';
 
 /* ----------------------------------------- */
 /* ---------- // Helper functions ---------- */
@@ -323,9 +321,7 @@ export function addBestFit<P extends IBestFitStripPack>(
     instance,
     width
   );
-
   bestFitPlacement(instance, action, firstNode, lastNode, width, height, y);
-
   return placementPoint.create(x, y);
 }
 
@@ -351,9 +347,7 @@ export function addInLine<P extends IBestFitStripPack>(
   height: number
 ) {
   const point = placementPoint.create(instance.packedWidth, 0);
-
   inLinePlacement(instance, width, height);
-
   return point;
 }
 
@@ -368,9 +362,7 @@ export function addInLineRotatable<P extends IBestFitStripPack>(
     0,
     rotated
   );
-
   inLinePlacement(instance, width, height);
-
   return point;
 }
 

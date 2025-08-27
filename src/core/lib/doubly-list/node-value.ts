@@ -1,4 +1,4 @@
-import { IDoublyListNodeValue } from '../../types';
+import { IDoublyListNodeValue } from '../types';
 
 export function create<V extends IDoublyListNodeValue>(
   width: number,

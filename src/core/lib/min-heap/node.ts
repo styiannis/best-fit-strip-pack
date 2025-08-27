@@ -1,4 +1,4 @@
-import { IMinHeapNode } from '../../types';
+import { IMinHeapNode } from '../types';
 
 export function create<N extends IMinHeapNode>(
   key: N['key'],
