@@ -5,7 +5,7 @@ import {
   increase as minHeapIncrease,
   remove as minHeapRemove,
 } from 'addressable-binary-heaps/min-heap';
-import { IMinHeap } from '../../types';
+import { IMinHeap } from '../types';
 
 export function add<H extends IMinHeap>(instance: H, node: H[0]) {
   return minHeapAdd(instance, node);

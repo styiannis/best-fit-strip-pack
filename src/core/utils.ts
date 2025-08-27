@@ -1,17 +1,15 @@
 import {
   doublyList,
   fitPosition,
-  minHeap,
-  placementPoint,
-  placementPointRotatable,
-} from './lib';
-import {
   IDoublyListNode,
   IFitPosition,
   IFitPositionRotatable,
   IMinHeapNode,
-  IBestFitStripPack,
-} from './types';
+  minHeap,
+  placementPoint,
+  placementPointRotatable,
+} from './lib';
+import { IBestFitStripPack } from './types';
 
 /* ----------------------------------------- */
 /* ---------- // Helper functions ---------- */
@@ -147,16 +145,18 @@ function getBestFitPosition<P extends IBestFitStripPack>(
 
         let last = first;
         let maxHeight = first.heapNode.key;
-        let sumWidth = first.value.width;
+        let totalWidth = first.value.width;
 
         for (
           let next = first.next;
-          sumWidth < width && next?.heapNode && next.heapNode.key <= currHeight;
+          totalWidth < width &&
+          next?.heapNode &&
+          next.heapNode.key <= currHeight;
           next = next.next
         ) {
           last = next;
           maxHeight = Math.max(maxHeight, next.heapNode.key);
-          sumWidth += next.value.width;
+          totalWidth += next.value.width;
         }
 
         validateBestFitPosition(
@@ -278,9 +278,10 @@ function validateBestFitPosition<P extends IBestFitStripPack>(
     return;
   }
 
-  const sumWidth = lastNode.value.x + lastNode.value.width - firstNode.value.x;
+  const totalWidth =
+    lastNode.value.x + lastNode.value.width - firstNode.value.x;
 
-  if (width <= sumWidth) {
+  if (width <= totalWidth) {
     position.firstNode = firstNode;
     position.lastNode = lastNode;
     position.x = x;
@@ -288,7 +289,7 @@ function validateBestFitPosition<P extends IBestFitStripPack>(
     position.action =
       firstNode === lastNode
         ? 'first-node-only'
-        : width === sumWidth
+        : width === totalWidth
         ? 'remove-rest-nodes'
         : 'last-node-split';
 
@@ -320,9 +321,7 @@ export function addBestFit<P extends IBestFitStripPack>(
     instance,
     width
   );
-
   bestFitPlacement(instance, action, firstNode, lastNode, width, height, y);
-
   return placementPoint.create(x, y);
 }
 
@@ -348,9 +347,7 @@ export function addInLine<P extends IBestFitStripPack>(
   height: number
 ) {
   const point = placementPoint.create(instance.packedWidth, 0);
-
   inLinePlacement(instance, width, height);
-
   return point;
 }
 
@@ -365,9 +362,7 @@ export function addInLineRotatable<P extends IBestFitStripPack>(
     0,
     rotated
   );
-
   inLinePlacement(instance, width, height);
-
   return point;
 }
 

@@ -1,4 +1,4 @@
-import { IFitPosition } from '../types';
+import { IFitPosition } from './types';
 
 export function create<P extends IFitPosition>(
   firstNode: P['firstNode'],

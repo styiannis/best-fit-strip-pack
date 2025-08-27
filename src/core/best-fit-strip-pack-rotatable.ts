@@ -27,13 +27,13 @@ export function insert<P extends IBestFitStripPack>(
 ) {
   validateDimensionsRotatable(width, height, instance.stripWidth);
 
-  if (instance.stripWidth < width) {
+  if (width > instance.stripWidth) {
     return fitsInLine(instance, height)
       ? addInLineRotatable(instance, height, width, true)
       : { ...addBestFit(instance, height, width), rotated: true };
   }
 
-  if (instance.stripWidth < height) {
+  if (height > instance.stripWidth) {
     return fitsInLine(instance, width)
       ? addInLineRotatable(instance, width, height, false)
       : { ...addBestFit(instance, width, height), rotated: false };

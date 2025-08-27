@@ -1,14 +1,48 @@
+import { bestFitStripPack, bestFitStripPackRotatable } from '../../src/core';
 import {
   doublyList,
   fitPosition,
   minHeap,
   placementPoint,
   placementPointRotatable,
-} from '../src/core/lib';
-import { isValidObjectInstance } from './test-utils';
+} from '../../src/core/lib';
+import { isValidObjectInstance } from '../tests-utils';
 
-describe('Core >> lib', () => {
-  describe('Initializing instances', () => {
+describe('core', () => {
+  describe('Initializing objects instances', () => {
+    const stripWidth = 123;
+
+    it.each([
+      ['bestFitStripPack', bestFitStripPack.create(stripWidth)],
+      [
+        'bestFitStripPackRotatable',
+        bestFitStripPackRotatable.create(stripWidth),
+      ],
+    ] as const)('%s', (_, instance) => {
+      expect(
+        isValidObjectInstance(instance, 'best-fit-strip-pack') &&
+          instance.packedHeight === 0 &&
+          instance.packedWidth === 0 &&
+          instance.stripWidth === stripWidth
+      ).toBe(true);
+
+      expect(
+        isValidObjectInstance(instance.list, 'doubly-list') &&
+          instance.list.head === null &&
+          instance.list.tail === null &&
+          instance.list.size === 0
+      ).toBe(true);
+
+      expect(
+        isValidObjectInstance(instance.heap, 'min-heap') &&
+          instance.heap.length === 0
+      ).toBe(true);
+    });
+  });
+});
+
+describe('core/lib', () => {
+  describe('Initializing objects instances', () => {
     it('Doubly list', () => {
       const instance = doublyList.list.create();
 
