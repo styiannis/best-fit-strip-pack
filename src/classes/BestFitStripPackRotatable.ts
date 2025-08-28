@@ -1,31 +1,84 @@
 import { bestFitStripPackRotatable, IBestFitStripPack } from '../core';
 import { AbstractBestFitStripPackRotatable } from './abstract';
 
+/**
+ * Implementation of the Best-Fit Strip Packing algorithm with rotation support.
+ *
+ * This class provides a concrete implementation of the Best-Fit heuristic that
+ * automatically considers both orientations of each rectangle (original and rotated)
+ * to find the optimal placement that minimizes the overall strip height.
+ *
+ * Based on the 2009 paper "The best-fit heuristic for the rectangular strip packing
+ * problem: An efficient implementation and the worst-case approximation ratio".
+ */
 export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable {
-  readonly #packer: IBestFitStripPack;
+  /** Internal implementation instance. */
+  readonly #instance: IBestFitStripPack;
 
+  /**
+   * Creates a new Best-Fit strip packing instance with rotation support.
+   *
+   * @param stripWidth - The fixed width of the packing strip. Must be a positive number.
+   * @throws `TypeError` if `stripWidth` is not a number.
+   * @throws `RangeError` if `stripWidth` is not a positive number.
+   */
   constructor(stripWidth: number) {
     super();
-    this.#packer = bestFitStripPackRotatable.create(stripWidth);
+    this.#instance = bestFitStripPackRotatable.create(stripWidth);
   }
 
+  /**
+   * Gets the current total height of the packed strip.
+   *
+   * This represents the vertical space used by all placed rectangles
+   * and is updated after each rectangle insertion.
+   */
   get packedHeight() {
-    return this.#packer.packedHeight;
+    return this.#instance.packedHeight;
   }
 
+  /**
+   * Gets the current total width of the packed strip.
+   *
+   * This represents the horizontal space used by all placed rectangles
+   * and is updated after each rectangle insertion.
+   */
   get packedWidth() {
-    return this.#packer.packedWidth;
+    return this.#instance.packedWidth;
   }
 
+  /**
+   * Gets the fixed width of the strip.
+   *
+   * This is the maximum allowable width for any rectangle to be inserted.
+   */
   get stripWidth() {
-    return this.#packer.stripWidth;
+    return this.#instance.stripWidth;
   }
 
+  /**
+   * Inserts a rectangle into the strip, considering both orientations.
+   *
+   * The algorithm evaluates both the original orientation (`width × height`) and
+   * the rotated orientation (`height × width`) to determine which provides better
+   * packing efficiency. The orientation and placement that results in the smallest
+   * overall height increase is selected.
+   *
+   * @param width - Rectangle width
+   * @param height - Rectangle height
+   * @returns Placement coordinates and rotation flag
+   * @throws `TypeError` if `width` or `height` is not a number.
+   * @throws `RangeError` if `width` or `height` value is not positive.
+   * @throws `RangeError` if both `width` and `height` exceed the strip width.
+   */
   insert(width: number, height: number) {
-    return bestFitStripPackRotatable.insert(this.#packer, width, height);
+    return bestFitStripPackRotatable.insert(this.#instance, width, height);
   }
 
+  /**
+   * Clears all rectangles and resets to initial state.
+   */
   reset() {
-    return bestFitStripPackRotatable.reset(this.#packer);
+    return bestFitStripPackRotatable.reset(this.#instance);
   }
 }

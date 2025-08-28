@@ -2,14 +2,17 @@
 
 A TypeScript implementation of the online Best-Fit algorithm for the 2D rectangular strip packing problem. Based on the 2009 paper ["The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio"](#todo) by Y. Zhang, A. S. K. Mok, and L. Zhang.
 
+Implements the **Best-fit decreasing height (BFDH)** heuristic, which processes rectangles by non-increasing height and places each rectangle in the position that minimizes the increase to overall strip height.
+
 ## Features
 
-- **Online Algorithm:** Processes rectangles one by one in the order they are provided.
-- **Best-Fit Heuristic:** Places each rectangle in the position that minimizes the increase to overall strip height.
-- **Rotation Support:** Optional variant that considers rectangle rotation for better space utilization.
-- **Type Safe:** Full TypeScript support with complete type definitions.
-- **Real-time Metrics:** Track packed dimensions at any point during insertion.
-- **Efficient Architecture:** Optimized data structure usage for high performance.
+- **BFDH Algorithm:** Implements Best-fit decreasing height heuristic for optimal space utilization
+- **Online Processing:** Processes rectangles one by one in the order they are provided
+- **Best-Fit Heuristic:** Places each rectangle in the position that minimizes the increase to overall strip height
+- **Rotation Support:** Optional variant that considers rectangle rotation for better space utilization
+- **Type Safe:** Full TypeScript support with complete type definitions
+- **Real-time Metrics:** Track packed dimensions at any point during insertion
+- **Efficient Architecture:** Optimized data structure usage for high performance
 
 ## Installation
 
@@ -95,7 +98,7 @@ new BestFitStripPack(stripWidth: number)
 
 - `packedHeight: number` - Current total height of the packed strip
 - `packedWidth: number` - Current total width of the packed strip
-- `stripWidth: number` - Fixed width of the strip (readonly)
+- `stripWidth: number` - Fixed width of the strip
 
 **Methods:**
 
@@ -125,10 +128,11 @@ new BestFitStripPackRotatable(stripWidth: number)
 
 ## Algorithm Details
 
-The Best-Fit algorithm uses an efficient architecture with optimized data structures to place each rectangle in the position that minimizes the increase to the overall packed height of the strip.
+The library implements the **Best-fit decreasing height (BFDH)** heuristic, which uses an efficient architecture with optimized data structures to place each rectangle in the position that minimizes the increase to the overall packed height of the strip.
 
 **Key characteristics:**
 
+- **BFDH Heuristic:** Processes rectangles and places them using the best-fit decreasing height strategy
 - **Online Processing:** Rectangles processed sequentially in arrival order
 - **Best-Fit Placement:** Algorithm selects positions that minimize global height increase
 - **Efficient Data Structures:** Optimized architecture for high-performance operations
@@ -143,10 +147,6 @@ The Best-Fit algorithm uses an efficient architecture with optimized data struct
 - Real-time tracking of packing metrics
 
 For mathematical details and performance analysis, refer to the [original paper](#todo).
-
-## Performance
-
-The implementation maintains `O(nlogn)` time complexity for inserting n rectangles through the use of optimized data structures and algorithms.
 
 ## References
 
