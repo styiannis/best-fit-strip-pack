@@ -16,8 +16,22 @@ Implements the **Best-fit decreasing height (BFDH)** heuristic, which processes 
 
 ## Installation
 
+### Install via npm
+
 ```bash
 npm install best-fit-strip-pack
+```
+
+### Install via yarn
+
+```bash
+yarn add best-fit-strip-pack
+```
+
+### Install via pnpm
+
+```bash
+pnpm install best-fit-strip-pack
 ```
 
 ## Usage
@@ -27,21 +41,19 @@ npm install best-fit-strip-pack
 ```typescript
 import { BestFitStripPack } from 'best-fit-strip-pack';
 
-// Create a packer for a strip of width 100 units
-const packer = new BestFitStripPack(100);
+// Create an instance for a strip of width 100 units
+const bfsp = new BestFitStripPack(100);
 
-// Insert rectangles (order matters for online algorithm)
-const position1 = packer.insert(30, 40); // { x: 0, y: 0 }
-const position2 = packer.insert(20, 60); // { x: 30, y: 0 }
-const position3 = packer.insert(50, 30); // { x: 0, y: 40 }
+// Insert rectangles
+console.log(bfsp.insert(30, 40)); // { x: 0, y: 0 }
+console.log(bfsp.insert(20, 60)); // { x: 30, y: 0 }
+console.log(bfsp.insert(50, 30)); // { x: 0, y: 40 }
 
 // Get current packed dimensions
-console.log(
-  `Used width: ${packer.packedWidth}, height: ${packer.packedHeight}`
-);
+console.log(`Used width: ${bfsp.packedWidth}, height: ${bfsp.packedHeight}`);
 
 // Reset for a new packing sequence
-packer.reset();
+bfsp.reset();
 ```
 
 ### Packing with Rotation
@@ -49,13 +61,13 @@ packer.reset();
 ```typescript
 import { BestFitStripPackRotatable } from 'best-fit-strip-pack';
 
-const packer = new BestFitStripPackRotatable(100);
+const bfsp = new BestFitStripPackRotatable(100);
 
 // The algorithm will automatically choose the best orientation
-const result = packer.insert(40, 60);
+console.log(bfsp.insert(40, 60));
 // { x: 0, y: 0, rotated: true } - rectangle was rotated to 60x40
 
-const result2 = packer.insert(30, 20);
+console.log(bfsp.insert(30, 20));
 // { x: 60, y: 0, rotated: false } - placed in original orientation
 ```
 
@@ -70,16 +82,26 @@ const rectangles = [
   { width: 60, height: 50 },
 ];
 
-const packer = new BestFitStripPack(100);
+const bfsp = new BestFitStripPack(100);
+
 const packedItems = [];
 
 for (const rect of rectangles) {
-  const position = packer.insert(rect.width, rect.height);
+  const position = bfsp.insert(rect.width, rect.height);
   packedItems.push({ ...rect, ...position });
 }
 
-console.log(`Final strip height: ${packer.packedHeight}`);
+console.log(`Final strip height: ${bfsp.packedHeight}`);
+// Final strip height: 110
+
 console.log('Packed items:', packedItems);
+// Packed items: [
+//   { width: 30, height: 40, x: 0, y: 0 },
+//   { width: 20, height: 60, x: 30, y: 0 },
+//   { width: 50, height: 30, x: 50, y: 0 },
+//   { width: 10, height: 20, x: 50, y: 30 },
+//   { width: 60, height: 50, x: 0, y: 60 }
+// ]
 ```
 
 ## API Reference
@@ -147,6 +169,18 @@ The library implements the **Best-fit decreasing height (BFDH)** heuristic, whic
 - Real-time tracking of packing metrics
 
 For mathematical details and performance analysis, refer to the [original paper](#todo).
+
+## Code documentation
+
+The complete API reference of the library with detailed examples is available at the [code documentation site](https://styiannis.github.io/best-fit-strip-pack/).
+
+## Issues and Support
+
+If you encounter any issues or have questions, please [open an issue](https://github.com/styiannis/best-fit-strip-pack/issues).
+
+## License
+
+This project is licensed under the [MIT License](https://github.com/styiannis/best-fit-strip-pack?tab=MIT-1-ov-file#readme).
 
 ## References
 
