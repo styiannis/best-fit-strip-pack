@@ -7,9 +7,6 @@ import { AbstractBestFitStripPackRotatable } from './abstract';
  * This class provides a concrete implementation of the Best-Fit heuristic that
  * automatically considers both orientations of each rectangle (original and rotated)
  * to find the optimal placement that minimizes the overall strip height.
- *
- * Based on the 2009 paper "The best-fit heuristic for the rectangular strip packing
- * problem: An efficient implementation and the worst-case approximation ratio".
  */
 export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable {
   /** Internal implementation instance. */

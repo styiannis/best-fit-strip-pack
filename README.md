@@ -1,18 +1,17 @@
 # Best-Fit Strip Pack
 
-A TypeScript implementation of the online Best-Fit algorithm for the 2D rectangular strip packing problem. Based on the 2009 paper ["The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio"](#todo) by Y. Zhang, A. S. K. Mok, and L. Zhang.
+A TypeScript implementation of the Best-Fit algorithm for the 2D rectangular [strip packing problem](#references). The strip packing problem involves packing rectangles of varying dimensions into a strip of fixed width and infinite height, minimizing the total height used.
 
-Implements the **Best-fit decreasing height (BFDH)** heuristic, which processes rectangles by non-increasing height and places each rectangle in the position that minimizes the increase to overall strip height.
+This library implements the **Best-Fit Decreasing Height (BFDH)** heuristic, which places each rectangle in the position that minimizes the increase to the overall strip height. The algorithm processes rectangles sequentially without any pre-sorting or post-processing, making it suitable for online scenarios.
+
+Based on the paper "_[The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio](#references)_" by Shinji Imahori and Mutsunori Yagiura.
 
 ## Features
 
-- **BFDH Algorithm:** Implements Best-fit decreasing height heuristic for optimal space utilization
-- **Online Processing:** Processes rectangles one by one in the order they are provided
-- **Best-Fit Heuristic:** Places each rectangle in the position that minimizes the increase to overall strip height
-- **Rotation Support:** Optional variant that considers rectangle rotation for better space utilization
-- **Type Safe:** Full TypeScript support with complete type definitions
-- **Real-time Metrics:** Track packed dimensions at any point during insertion
-- **Efficient Architecture:** Optimized data structure usage for high performance
+- **Best-Fit Decreasing Height (BFDH)**: Implements the BFDH heuristic that places each rectangle in the position that minimizes the increase to overall strip height
+- **Online Processing**: Processes rectangles strictly in insertion order without any pre-sorting or post-processing
+- **Rotation Support**: Optional variant that automatically considers both rectangle orientations for better space utilization
+- **Proven Efficiency**: Utilizes optimized data structures (linked lists and min-heaps) for high-performance operations
 
 ## Installation
 
@@ -148,31 +147,9 @@ new BestFitStripPackRotatable(stripWidth: number)
 - `insert(width: number, height: number): { x: number; y: number; rotated: boolean }`
 - `reset(): void`
 
-## Algorithm Details
-
-The library implements the **Best-fit decreasing height (BFDH)** heuristic, which uses an efficient architecture with optimized data structures to place each rectangle in the position that minimizes the increase to the overall packed height of the strip.
-
-**Key characteristics:**
-
-- **BFDH Heuristic:** Processes rectangles and places them using the best-fit decreasing height strategy
-- **Online Processing:** Rectangles processed sequentially in arrival order
-- **Best-Fit Placement:** Algorithm selects positions that minimize global height increase
-- **Efficient Data Structures:** Optimized architecture for high-performance operations
-- **Column-based Approach:** Maintains and merges columns dynamically during packing
-- **Approximation Guarantees:** Provides good results with proven worst-case bounds
-
-**Architecture Highlights:**
-
-- Maintains a dynamic set of columns representing packed areas
-- Uses efficient data structures for quick best-fit candidate selection
-- Performs column merging to optimize space utilization for future placements
-- Real-time tracking of packing metrics
-
-For mathematical details and performance analysis, refer to the [original paper](#todo).
-
 ## Code documentation
 
-The complete API reference of the library with detailed examples is available at the [code documentation site](https://styiannis.github.io/best-fit-strip-pack/).
+The complete API reference of the library is available at the [code documentation site](https://styiannis.github.io/best-fit-strip-pack/).
 
 ## Issues and Support
 
@@ -184,4 +161,5 @@ This project is licensed under the [MIT License](https://github.com/styiannis/be
 
 ## References
 
-Zhang, Y., Mok, A. S. K., & Zhang, L. (2009). The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio. Computers & Operations Research, 36(5), 1605-1611.
+1. [Strip packing problem - Wikipedia](https://en.wikipedia.org/wiki/Strip_packing_problem)
+2. Imahori, S., & Yagiura, M. (2010). The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio. _Computers & Operations Research, 37(2), 325–333_. https://doi.org/10.1016/j.cor.2009.05.008
