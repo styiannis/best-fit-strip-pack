@@ -120,7 +120,7 @@ function getBestFitPosition<P extends IBestFitStripPack>(
     instance.list.tail as NonNullable<P['list']['tail']>,
     0,
     instance.packedHeight,
-    'merge-all'
+    'first-only'
   );
 
   for (let i = 0, x = 1; i < instance.heap.length; i = x - 1) {

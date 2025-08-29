@@ -1,17 +1,17 @@
 # Best-Fit Strip Pack
 
-A TypeScript implementation of the Best-Fit algorithm for the 2D rectangular [strip packing problem](#references). The strip packing problem involves packing rectangles of varying dimensions into a strip of fixed width and infinite height, minimizing the total height used.
+A TypeScript implementation of the best-fit algorithm for the 2D rectangular [strip packing problem](#references). The strip packing problem involves packing rectangles of varying dimensions into a strip of fixed width and infinite height, minimizing the total height used.
 
-This library implements the **Best-Fit Decreasing Height (BFDH)** heuristic, which places each rectangle in the position that minimizes the increase to the overall strip height. The algorithm processes rectangles sequentially without any pre-sorting or post-processing, making it suitable for online scenarios.
+This library implements the **online best-fit heuristic**, which places each rectangle in the position that minimizes the increase to the overall strip height. The algorithm processes rectangles sequentially in insertion order without any pre-sorting or post-processing, making it suitable for real-time scenarios where rectangles arrive one by one.
 
 Based on the paper "_[The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio](#references)_" by Shinji Imahori and Mutsunori Yagiura.
 
 ## Features
 
-- **Best-Fit Decreasing Height (BFDH)**: Implements the BFDH heuristic that places each rectangle in the position that minimizes the increase to overall strip height
-- **Online Processing**: Processes rectangles strictly in insertion order without any pre-sorting or post-processing
+- **Online Best-Fit Heuristic**: Places each rectangle in the position that minimizes the increase to overall strip height, processing items in insertion order
+- **Real-time Processing**: Handles rectangles sequentially without pre-sorting or post-processing
 - **Rotation Support**: Optional variant that automatically considers both rectangle orientations for better space utilization
-- **Proven Efficiency**: Utilizes optimized data structures (linked lists and min-heaps) for high-performance operations
+- **Optimized Data Structures**: Uses linked lists and min-heaps for high-performance operations
 
 ## Installation
 
