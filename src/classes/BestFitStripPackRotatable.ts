@@ -1,4 +1,5 @@
-import { bestFitStripPackRotatable, IBestFitStripPack } from '../core';
+import { IBestFitStripPack } from '../core';
+import { create, insert, reset } from '../core/best-fit-strip-pack-rotatable';
 import { AbstractBestFitStripPackRotatable } from './abstract';
 
 /**
@@ -10,7 +11,7 @@ import { AbstractBestFitStripPackRotatable } from './abstract';
  */
 export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable {
   /** Internal implementation instance. */
-  readonly #instance: IBestFitStripPack;
+  readonly #obj: IBestFitStripPack;
 
   /**
    * Creates a new Best-Fit strip packing instance with rotation support.
@@ -21,7 +22,7 @@ export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable
    */
   constructor(stripWidth: number) {
     super();
-    this.#instance = bestFitStripPackRotatable.create(stripWidth);
+    this.#obj = create(stripWidth);
   }
 
   /**
@@ -31,7 +32,7 @@ export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable
    * and is updated after each rectangle insertion.
    */
   get packedHeight() {
-    return this.#instance.packedHeight;
+    return this.#obj.packedHeight;
   }
 
   /**
@@ -41,7 +42,7 @@ export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable
    * and is updated after each rectangle insertion.
    */
   get packedWidth() {
-    return this.#instance.packedWidth;
+    return this.#obj.packedWidth;
   }
 
   /**
@@ -50,7 +51,7 @@ export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable
    * This is the maximum allowable width for any rectangle to be inserted.
    */
   get stripWidth() {
-    return this.#instance.stripWidth;
+    return this.#obj.stripWidth;
   }
 
   /**
@@ -69,13 +70,13 @@ export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable
    * @throws `RangeError` if both `width` and `height` exceed the strip width.
    */
   insert(width: number, height: number) {
-    return bestFitStripPackRotatable.insert(this.#instance, width, height);
+    return insert(this.#obj, width, height);
   }
 
   /**
    * Clears all rectangles and resets to initial state.
    */
   reset() {
-    return bestFitStripPackRotatable.reset(this.#instance);
+    return reset(this.#obj);
   }
 }

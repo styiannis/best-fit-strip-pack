@@ -17,14 +17,14 @@ import { IBestFitStripPack } from './types';
 
 function bestFitPlacement<P extends IBestFitStripPack>(
   instance: P,
-  action: 'first-node-only' | 'remove-rest-nodes' | 'last-node-split',
+  action: IFitPosition['action'],
   firstNode: NonNullable<P['list']['head']>,
   lastNode: NonNullable<P['list']['head']>,
   w: number,
   h: number,
   y: number
 ) {
-  if (action === 'first-node-only') {
+  if (action === 'first-only') {
     if (w < firstNode.value.width) {
       splitNode(instance, firstNode, w);
     }
@@ -36,7 +36,7 @@ function bestFitPlacement<P extends IBestFitStripPack>(
       firstNode.previous ?? firstNode,
       firstNode.next ?? firstNode
     );
-  } else if (action === 'remove-rest-nodes') {
+  } else if (action === 'merge-all') {
     removeAllNodesButTheFirst(instance, firstNode, lastNode);
 
     firstNode.value.width = w;
@@ -120,7 +120,7 @@ function getBestFitPosition<P extends IBestFitStripPack>(
     instance.list.tail as NonNullable<P['list']['tail']>,
     0,
     instance.packedHeight,
-    'remove-rest-nodes'
+    'merge-all'
   );
 
   for (let i = 0, x = 1; i < instance.heap.length; i = x - 1) {
@@ -288,10 +288,10 @@ function validateBestFitPosition<P extends IBestFitStripPack>(
     position.y = y;
     position.action =
       firstNode === lastNode
-        ? 'first-node-only'
+        ? 'first-only'
         : width === totalWidth
-        ? 'remove-rest-nodes'
-        : 'last-node-split';
+        ? 'merge-all'
+        : 'merge-and-split-last';
 
     return;
   }
@@ -304,7 +304,7 @@ function validateBestFitPosition<P extends IBestFitStripPack>(
     position.lastNode = lastNode;
     position.x = x;
     position.y = y;
-    position.action = 'remove-rest-nodes';
+    position.action = 'merge-all';
   }
 }
 

@@ -82,7 +82,7 @@ describe('core/lib', () => {
       const x = 2;
       const y = 6;
 
-      const action = 'remove-rest-nodes';
+      const action = 'merge-all';
 
       const instance = fitPosition.create(firstNode, lastNode, x, y, action);
 
