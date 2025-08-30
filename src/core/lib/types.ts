@@ -32,21 +32,6 @@ export interface IPlacementPointRotatable extends IPlacementPoint {
 }
 
 /**
- * Value stored in a doubly-linked list node for column segment tracking.
- */
-export interface IDoublyListNodeValue {
-  /**
-   * Width of the column segment.
-   */
-  width: number;
-
-  /**
-   * Horizontal starting position of this column segment.
-   */
-  x: number;
-}
-
-/**
  * Node in the doubly-linked list maintaining column segments of the packing strip.
  *
  * @typeParam HN - Type of associated heap node
@@ -54,9 +39,14 @@ export interface IDoublyListNodeValue {
 export interface IDoublyListNode<HN extends IMinHeapNode = IMinHeapNode>
   extends IDoublyLinkedListNode {
   /**
-   * Dimensional data for this column segment.
+   * Horizontal starting position of this column segment.
    */
-  value: IDoublyListNodeValue;
+  x: number;
+
+  /**
+   * Width of the column segment.
+   */
+  width: number;
 
   /**
    * Associated heap node tracking this segment's height.

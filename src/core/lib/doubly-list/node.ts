@@ -5,12 +5,14 @@ import {
 import { IDoublyListNode } from '../types';
 
 export function create<N extends IDoublyListNode>(
-  value: N['value'],
+  x: N['x'],
+  width: N['width'],
   heapNode: N['heapNode']
 ) {
   const instance = nodeCreate<N>();
 
-  instance.value = value;
+  instance.x = x;
+  instance.width = width;
   instance.heapNode = heapNode;
 
   return instance;

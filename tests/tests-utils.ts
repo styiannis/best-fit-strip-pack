@@ -56,7 +56,6 @@ export function isValidObjectInstance(
     | 'best-fit-strip-pack'
     | 'doubly-list'
     | 'doubly-list-node'
-    | 'doubly-list-node-value'
     | 'fit-position'
     | 'min-heap'
     | 'min-heap-node'
@@ -97,12 +96,9 @@ export function isValidObjectInstance(
       'heapNode',
       'next',
       'previous',
-      'value',
+      'width',
+      'x',
     ]);
-  }
-
-  if (instanceType === 'doubly-list-node-value') {
-    return arraysAreIdentical(propertyNames, ['width', 'x']);
   }
 
   if (instanceType === 'fit-position') {

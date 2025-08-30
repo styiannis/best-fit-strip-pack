@@ -75,8 +75,8 @@ function validateListNodeData(
   expected: { x: number; w: number; h: number }
 ) {
   expect({
-    x: listNode.value.x,
-    w: listNode.value.width,
+    x: listNode.x,
+    w: listNode.width,
     h: listNode.heapNode ? listNode.heapNode.key : Infinity,
   }).toStrictEqual(expected);
 }

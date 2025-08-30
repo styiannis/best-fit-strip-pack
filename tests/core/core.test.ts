@@ -56,31 +56,44 @@ describe('core/lib', () => {
 
     it('Doubly list node', () => {
       const heapNode = minHeap.node.create(0, null);
-      const value = doublyList.nodeValue.create(0, 0);
-      const instance = doublyList.node.create(value, heapNode);
+      const x = 0;
+      const width = 100;
+      const instance = doublyList.node.create(x, width, heapNode);
 
       expect(
         isValidObjectInstance(instance, 'doubly-list-node') &&
           isValidObjectInstance(instance.heapNode, 'min-heap-node') &&
-          isValidObjectInstance(instance.value, 'doubly-list-node-value') &&
+          instance.x === x &&
+          instance.width === width &&
           instance.heapNode === heapNode &&
-          instance.value === value &&
           instance.next === null &&
           instance.previous === null
       ).toBe(true);
     });
 
     it('Fit position', () => {
-      const firstNodeHeap = minHeap.node.create(0, null);
-      const firstNodeValue = doublyList.nodeValue.create(0, 0);
-      const firstNode = doublyList.node.create(firstNodeValue, firstNodeHeap);
+      const firstNodeX = 0;
+      const firstNodeWidth = 5;
+      const firstNodeHeight = 2;
+      const firstNodeHeap = minHeap.node.create(firstNodeHeight, null);
+      const firstNode = doublyList.node.create(
+        firstNodeX,
+        firstNodeWidth,
+        firstNodeHeap
+      );
 
-      const lastNodeHeap = minHeap.node.create(0, null);
-      const lastNodeValue = doublyList.nodeValue.create(0, 0);
-      const lastNode = doublyList.node.create(lastNodeValue, lastNodeHeap);
+      const lastNodeX = 5;
+      const lastNodeWidth = 8;
+      const lastNodeHeight = 4;
+      const lastNodeHeap = minHeap.node.create(lastNodeHeight, null);
+      const lastNode = doublyList.node.create(
+        lastNodeX,
+        lastNodeWidth,
+        lastNodeHeap
+      );
 
-      const x = 2;
-      const y = 6;
+      const x = 8;
+      const y = 9;
 
       const action = 'merge-all';
 
@@ -97,16 +110,18 @@ describe('core/lib', () => {
 
       expect(
         isValidObjectInstance(instance.firstNode, 'doubly-list-node') &&
+          instance.firstNode.x === firstNodeX &&
+          instance.firstNode.width === firstNodeWidth &&
           instance.firstNode.heapNode === firstNodeHeap &&
-          instance.firstNode.value === firstNodeValue &&
           instance.firstNode.next === null &&
           instance.firstNode.previous === null
       ).toBe(true);
 
       expect(
         isValidObjectInstance(instance.lastNode, 'doubly-list-node') &&
+          instance.lastNode.x === lastNodeX &&
+          instance.lastNode.width === lastNodeWidth &&
           instance.lastNode.heapNode === lastNodeHeap &&
-          instance.lastNode.value === lastNodeValue &&
           instance.lastNode.next === null &&
           instance.lastNode.previous === null
       ).toBe(true);
