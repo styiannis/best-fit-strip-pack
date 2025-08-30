@@ -27,7 +27,6 @@ export function detachNode<L extends IDoublyList>(
   }
 
   detach(node);
-
   instance.size -= 1;
 
   return node;

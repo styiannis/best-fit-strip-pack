@@ -1,6 +1,15 @@
 {
   "name": "best-fit-strip-pack",
-  "version": "0.9.0",
+  "version": "1.0.0",
+  "description": "A TypeScript implementation of the online best-fit algorithm for the 2D rectangular strip packing problem.",
+  "keywords": [
+    "2d packing",
+    "best fit",
+    "heuristic",
+    "packing",
+    "rectangular packing",
+    "strip packing"
+  ],
   "author": "Yiannis Stergiou <hello@styiannis.dev>",
   "license": "MIT",
   "repository": {
@@ -45,6 +54,10 @@
     "test-watch": "jest --watchAll",
     "validate-exports": "node ./scripts/validate-exports.js"
   },
+  "dependencies": {
+    "abstract-linked-lists": "^1.0.5",
+    "addressable-binary-heaps": "^1.0.3"
+  },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-typescript": "^12.1.4",
@@ -69,9 +82,5 @@
         "default": "./dist/cjs/index.js"
       }
     }
-  },
-  "dependencies": {
-    "abstract-linked-lists": "^1.0.5",
-    "addressable-binary-heaps": "^1.0.3"
   }
 }

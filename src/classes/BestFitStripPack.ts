@@ -1,31 +1,81 @@
-import { bestFitStripPack, IBestFitStripPack } from '../core';
+import { IBestFitStripPack } from '../core';
+import { create, insert, reset } from '../core/best-fit-strip-pack';
 import { AbstractBestFitStripPack } from './abstract';
 
+/**
+ * Implementation of the Best-Fit Strip Packing algorithm without rotation.
+ *
+ * This class provides a concrete implementation of the best-fit heuristic that
+ * places rectangles in their original orientation, finding the optimal
+ * placement that minimizes the overall strip height.
+ */
 export class BestFitStripPack extends AbstractBestFitStripPack {
-  readonly #packer: IBestFitStripPack;
+  /** Internal implementation instance. */
+  readonly #obj: IBestFitStripPack;
 
+  /**
+   * Creates a new best-fit strip packing instance.
+   *
+   * @param stripWidth - The fixed width of the packing strip.
+   * @throws `TypeError` if `stripWidth` is not a number.
+   * @throws `RangeError` if `stripWidth` is not a positive number.
+   */
   constructor(stripWidth: number) {
     super();
-    this.#packer = bestFitStripPack.create(stripWidth);
+    this.#obj = create(stripWidth);
   }
 
+  /**
+   * Gets the current total height of the packed strip.
+   *
+   * This represents the vertical space used by all placed rectangles
+   * and is updated after each rectangle insertion.
+   */
   get packedHeight() {
-    return this.#packer.packedHeight;
+    return this.#obj.packedHeight;
   }
 
+  /**
+   * Gets the current total width of the packed strip.
+   *
+   * This represents the horizontal space used by all placed rectangles
+   * and is updated after each rectangle insertion.
+   */
   get packedWidth() {
-    return this.#packer.packedWidth;
+    return this.#obj.packedWidth;
   }
 
+  /**
+   * Gets the fixed width of the strip.
+   *
+   * This is the maximum allowable width for any rectangle to be inserted.
+   */
   get stripWidth() {
-    return this.#packer.stripWidth;
+    return this.#obj.stripWidth;
   }
 
+  /**
+   * Inserts a rectangle into the strip at optimal position.
+   *
+   * Finds an optimal position for the rectangle by evaluating potential placements
+   * and selecting the one that minimizes the increase to the overall packed height
+   * of the strip.
+   *
+   * @param width - Rectangle width
+   * @param height - Rectangle height
+   * @returns Placement coordinates.
+   * @throws `TypeError` if `width` or `height` is not a number.
+   * @throws `RangeError` if `width` or `height` value is not positive.
+   * @throws `RangeError` if `width` is larger than strip width.
+   */
   insert(width: number, height: number) {
-    return bestFitStripPack.insert(this.#packer, width, height);
+    return insert(this.#obj, width, height);
   }
 
+  /**
+   * Resets the instance to initial state.
+   */
   reset() {
-    return bestFitStripPack.reset(this.#packer);
+    return reset(this.#obj);
   }
 }

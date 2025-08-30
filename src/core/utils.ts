@@ -17,15 +17,15 @@ import { IBestFitStripPack } from './types';
 
 function bestFitPlacement<P extends IBestFitStripPack>(
   instance: P,
-  action: 'first-node-only' | 'remove-rest-nodes' | 'last-node-split',
+  action: IFitPosition['action'],
   firstNode: NonNullable<P['list']['head']>,
   lastNode: NonNullable<P['list']['head']>,
   w: number,
   h: number,
   y: number
 ) {
-  if (action === 'first-node-only') {
-    if (w < firstNode.value.width) {
+  if (action === 'first-only') {
+    if (w < firstNode.width) {
       splitNode(instance, firstNode, w);
     }
 
@@ -36,10 +36,10 @@ function bestFitPlacement<P extends IBestFitStripPack>(
       firstNode.previous ?? firstNode,
       firstNode.next ?? firstNode
     );
-  } else if (action === 'remove-rest-nodes') {
+  } else if (action === 'merge-all') {
     removeAllNodesButTheFirst(instance, firstNode, lastNode);
 
-    firstNode.value.width = w;
+    firstNode.width = w;
 
     minHeap.heap.increase(
       instance.heap,
@@ -59,7 +59,7 @@ function bestFitPlacement<P extends IBestFitStripPack>(
       lastNode.previous ?? firstNode
     );
 
-    firstNode.value.width = w;
+    firstNode.width = w;
 
     minHeap.heap.increase(
       instance.heap,
@@ -67,10 +67,8 @@ function bestFitPlacement<P extends IBestFitStripPack>(
       y + h - firstNode.heapNode.key
     );
 
-    lastNode.value.width =
-      lastNode.value.x + lastNode.value.width - firstNode.value.x - w;
-
-    lastNode.value.x = firstNode.value.x + firstNode.value.width;
+    lastNode.width = lastNode.x + lastNode.width - firstNode.x - w;
+    lastNode.x = firstNode.x + firstNode.width;
 
     mergeEqualHeightNodes(
       instance,
@@ -83,12 +81,8 @@ function bestFitPlacement<P extends IBestFitStripPack>(
 }
 
 function createRecord(width: number, height: number, x: number) {
-  const listNodevalue = doublyList.nodeValue.create(width, x);
   const heapNode = minHeap.node.create<IMinHeapNode>(height, null);
-  const listNode = doublyList.node.create<IDoublyListNode>(
-    listNodevalue,
-    heapNode
-  );
+  const listNode = doublyList.node.create<IDoublyListNode>(x, width, heapNode);
   heapNode.listNode = listNode;
   return { heapNode, listNode };
 }
@@ -120,7 +114,7 @@ function getBestFitPosition<P extends IBestFitStripPack>(
     instance.list.tail as NonNullable<P['list']['tail']>,
     0,
     instance.packedHeight,
-    'remove-rest-nodes'
+    'first-only'
   );
 
   for (let i = 0, x = 1; i < instance.heap.length; i = x - 1) {
@@ -130,44 +124,44 @@ function getBestFitPosition<P extends IBestFitStripPack>(
         P['list']['head']
       >;
 
-      if (listNode.heapNode.key <= position.y) {
-        const currHeight = listNode.heapNode.key;
-
-        let first = listNode;
-
-        for (
-          let prev = first.previous;
-          prev?.heapNode && prev.heapNode.key <= currHeight;
-          prev = prev.previous
-        ) {
-          first = prev;
-        }
-
-        let last = first;
-        let maxHeight = first.heapNode.key;
-        let totalWidth = first.value.width;
-
-        for (
-          let next = first.next;
-          totalWidth < width &&
-          next?.heapNode &&
-          next.heapNode.key <= currHeight;
-          next = next.next
-        ) {
-          last = next;
-          maxHeight = Math.max(maxHeight, next.heapNode.key);
-          totalWidth += next.value.width;
-        }
-
-        validateBestFitPosition(
-          instance,
-          position,
-          first,
-          last,
-          width,
-          maxHeight
-        );
+      if (listNode.heapNode.key > position.y) {
+        continue;
       }
+
+      const currHeight = listNode.heapNode.key;
+
+      let first = listNode;
+
+      for (
+        let prev = first.previous;
+        prev?.heapNode && prev.heapNode.key <= currHeight;
+        prev = prev.previous
+      ) {
+        first = prev;
+      }
+
+      let last = first;
+      let maxHeight = first.heapNode.key;
+      let totalWidth = first.width;
+
+      for (
+        let next = first.next;
+        totalWidth < width && next?.heapNode && next.heapNode.key <= currHeight;
+        next = next.next
+      ) {
+        last = next;
+        maxHeight = Math.max(maxHeight, next.heapNode.key);
+        totalWidth += next.width;
+      }
+
+      validateBestFitPosition(
+        instance,
+        position,
+        first,
+        last,
+        width,
+        maxHeight
+      );
     }
   }
 
@@ -180,7 +174,7 @@ function inLinePlacement<P extends IBestFitStripPack>(
   h: number
 ) {
   if (instance.list.tail?.heapNode?.key === h) {
-    instance.list.tail.value.width += w;
+    instance.list.tail.width += w;
   } else {
     const { heapNode, listNode } = createRecord(w, h, instance.packedWidth);
     minHeap.heap.add(instance.heap, heapNode);
@@ -200,7 +194,7 @@ function mergeEqualHeightNodes<P extends IBestFitStripPack>(
     const next = node.next;
 
     if (node.heapNode.key === next.heapNode.key) {
-      node.value.width += next.value.width;
+      node.width += next.width;
       removeAllNodesButTheFirst(instance, node, next);
     } else {
       node = next;
@@ -238,9 +232,9 @@ function splitNode<P extends IBestFitStripPack>(
 ) {
   const nodeHeapNode = node.heapNode;
 
-  const newNodeWidth = node.value.width - width;
+  const newNodeWidth = node.width - width;
   const newNodeHeight = nodeHeapNode.key;
-  const newNodeX = node.value.x + width;
+  const newNodeX = node.x + width;
 
   const { heapNode, listNode } = createRecord(
     newNodeWidth,
@@ -251,7 +245,7 @@ function splitNode<P extends IBestFitStripPack>(
   doublyList.list.insertNextNode(instance.list, node, listNode);
   minHeap.heap.add(instance.heap, heapNode);
 
-  node.value.width = width;
+  node.width = width;
 }
 
 function updatePackedDimensions<P extends IBestFitStripPack>(
@@ -260,7 +254,7 @@ function updatePackedDimensions<P extends IBestFitStripPack>(
 ) {
   instance.packedHeight = Math.max(instance.packedHeight, newHeight);
   instance.packedWidth = instance.list.tail
-    ? instance.list.tail.value.x + instance.list.tail.value.width
+    ? instance.list.tail.x + instance.list.tail.width
     : 0;
 }
 
@@ -272,14 +266,13 @@ function validateBestFitPosition<P extends IBestFitStripPack>(
   width: number,
   y: number
 ) {
-  const x = firstNode.value.x;
+  const x = firstNode.x;
 
   if (y > position.y || (y === position.y && x > position.x)) {
     return;
   }
 
-  const totalWidth =
-    lastNode.value.x + lastNode.value.width - firstNode.value.x;
+  const totalWidth = lastNode.x + lastNode.width - firstNode.x;
 
   if (width <= totalWidth) {
     position.firstNode = firstNode;
@@ -288,23 +281,23 @@ function validateBestFitPosition<P extends IBestFitStripPack>(
     position.y = y;
     position.action =
       firstNode === lastNode
-        ? 'first-node-only'
+        ? 'first-only'
         : width === totalWidth
-        ? 'remove-rest-nodes'
-        : 'last-node-split';
+        ? 'merge-all'
+        : 'merge-and-split-last';
 
     return;
   }
 
   if (
     lastNode === instance.list.tail &&
-    width <= instance.stripWidth - firstNode.value.x
+    width <= instance.stripWidth - firstNode.x
   ) {
     position.firstNode = firstNode;
     position.lastNode = lastNode;
     position.x = x;
     position.y = y;
-    position.action = 'remove-rest-nodes';
+    position.action = 'merge-all';
   }
 }
 

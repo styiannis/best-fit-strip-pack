@@ -56,7 +56,6 @@ export function isValidObjectInstance(
     | 'best-fit-strip-pack'
     | 'doubly-list'
     | 'doubly-list-node'
-    | 'doubly-list-node-value'
     | 'fit-position'
     | 'min-heap'
     | 'min-heap-node'
@@ -67,13 +66,11 @@ export function isValidObjectInstance(
     if (!Array.isArray(instance)) {
       return false;
     }
-  } else {
-    if (
-      'object' !== typeof instance ||
-      Object.prototype !== Object.getPrototypeOf(instance)
-    ) {
-      return false;
-    }
+  } else if (
+    'object' !== typeof instance ||
+    Object.prototype !== Object.getPrototypeOf(instance)
+  ) {
+    return false;
   }
 
   const propertyNames = Object.getOwnPropertyNames(instance).sort();
@@ -97,12 +94,9 @@ export function isValidObjectInstance(
       'heapNode',
       'next',
       'previous',
-      'value',
+      'width',
+      'x',
     ]);
-  }
-
-  if (instanceType === 'doubly-list-node-value') {
-    return arraysAreIdentical(propertyNames, ['width', 'x']);
   }
 
   if (instanceType === 'fit-position') {
