@@ -124,44 +124,44 @@ function getBestFitPosition<P extends IBestFitStripPack>(
         P['list']['head']
       >;
 
-      if (listNode.heapNode.key <= position.y) {
-        const currHeight = listNode.heapNode.key;
-
-        let first = listNode;
-
-        for (
-          let prev = first.previous;
-          prev?.heapNode && prev.heapNode.key <= currHeight;
-          prev = prev.previous
-        ) {
-          first = prev;
-        }
-
-        let last = first;
-        let maxHeight = first.heapNode.key;
-        let totalWidth = first.width;
-
-        for (
-          let next = first.next;
-          totalWidth < width &&
-          next?.heapNode &&
-          next.heapNode.key <= currHeight;
-          next = next.next
-        ) {
-          last = next;
-          maxHeight = Math.max(maxHeight, next.heapNode.key);
-          totalWidth += next.width;
-        }
-
-        validateBestFitPosition(
-          instance,
-          position,
-          first,
-          last,
-          width,
-          maxHeight
-        );
+      if (listNode.heapNode.key > position.y) {
+        continue;
       }
+
+      const currHeight = listNode.heapNode.key;
+
+      let first = listNode;
+
+      for (
+        let prev = first.previous;
+        prev?.heapNode && prev.heapNode.key <= currHeight;
+        prev = prev.previous
+      ) {
+        first = prev;
+      }
+
+      let last = first;
+      let maxHeight = first.heapNode.key;
+      let totalWidth = first.width;
+
+      for (
+        let next = first.next;
+        totalWidth < width && next?.heapNode && next.heapNode.key <= currHeight;
+        next = next.next
+      ) {
+        last = next;
+        maxHeight = Math.max(maxHeight, next.heapNode.key);
+        totalWidth += next.width;
+      }
+
+      validateBestFitPosition(
+        instance,
+        position,
+        first,
+        last,
+        width,
+        maxHeight
+      );
     }
   }
 

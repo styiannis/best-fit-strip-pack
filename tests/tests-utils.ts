@@ -66,13 +66,11 @@ export function isValidObjectInstance(
     if (!Array.isArray(instance)) {
       return false;
     }
-  } else {
-    if (
-      'object' !== typeof instance ||
-      Object.prototype !== Object.getPrototypeOf(instance)
-    ) {
-      return false;
-    }
+  } else if (
+    'object' !== typeof instance ||
+    Object.prototype !== Object.getPrototypeOf(instance)
+  ) {
+    return false;
   }
 
   const propertyNames = Object.getOwnPropertyNames(instance).sort();
