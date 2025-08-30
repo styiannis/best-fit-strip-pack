@@ -5,7 +5,7 @@ import { AbstractBestFitStripPackRotatable } from './abstract';
 /**
  * Implementation of the Best-Fit Strip Packing algorithm with rotation support.
  *
- * This class provides a concrete implementation of the Best-Fit heuristic that
+ * This class provides a concrete implementation of the best-fit heuristic that
  * automatically considers both orientations of each rectangle (original and rotated)
  * to find the optimal placement that minimizes the overall strip height.
  */
@@ -14,9 +14,9 @@ export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable
   readonly #obj: IBestFitStripPack;
 
   /**
-   * Creates a new Best-Fit strip packing instance with rotation support.
+   * Creates a new best-fit strip packing instance with rotation support.
    *
-   * @param stripWidth - The fixed width of the packing strip. Must be a positive number.
+   * @param stripWidth - The fixed width of the packing strip.
    * @throws `TypeError` if `stripWidth` is not a number.
    * @throws `RangeError` if `stripWidth` is not a positive number.
    */
@@ -64,7 +64,7 @@ export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable
    *
    * @param width - Rectangle width
    * @param height - Rectangle height
-   * @returns Placement coordinates and rotation flag
+   * @returns Placement coordinates and rotation flag.
    * @throws `TypeError` if `width` or `height` is not a number.
    * @throws `RangeError` if `width` or `height` value is not positive.
    * @throws `RangeError` if both `width` and `height` exceed the strip width.
@@ -74,7 +74,7 @@ export class BestFitStripPackRotatable extends AbstractBestFitStripPackRotatable
   }
 
   /**
-   * Clears all rectangles and resets to initial state.
+   * Resets the instance to initial state.
    */
   reset() {
     return reset(this.#obj);

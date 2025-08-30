@@ -49,7 +49,7 @@ export interface IDoublyListNode<HN extends IMinHeapNode = IMinHeapNode>
   width: number;
 
   /**
-   * Associated heap node tracking this segment's height.
+   * Associated heap node tracking column segment height.
    */
   heapNode: HN;
 

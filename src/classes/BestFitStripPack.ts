@@ -5,8 +5,8 @@ import { AbstractBestFitStripPack } from './abstract';
 /**
  * Implementation of the Best-Fit Strip Packing algorithm without rotation.
  *
- * This class provides a concrete implementation of the Best-Fit heuristic that
- * places rectangles in their original orientation only, finding the optimal
+ * This class provides a concrete implementation of the best-fit heuristic that
+ * places rectangles in their original orientation, finding the optimal
  * placement that minimizes the overall strip height.
  */
 export class BestFitStripPack extends AbstractBestFitStripPack {
@@ -14,9 +14,9 @@ export class BestFitStripPack extends AbstractBestFitStripPack {
   readonly #obj: IBestFitStripPack;
 
   /**
-   * Creates a new Best-Fit strip packing instance.
+   * Creates a new best-fit strip packing instance.
    *
-   * @param stripWidth - The fixed width of the packing strip. Must be a positive number.
+   * @param stripWidth - The fixed width of the packing strip.
    * @throws `TypeError` if `stripWidth` is not a number.
    * @throws `RangeError` if `stripWidth` is not a positive number.
    */
@@ -59,12 +59,11 @@ export class BestFitStripPack extends AbstractBestFitStripPack {
    *
    * Finds an optimal position for the rectangle by evaluating potential placements
    * and selecting the one that minimizes the increase to the overall packed height
-   * of the strip. The placement is chosen based on which results in the best local
-   * choice for minimizing global height increase.
+   * of the strip.
    *
    * @param width - Rectangle width
    * @param height - Rectangle height
-   * @returns Placement coordinates
+   * @returns Placement coordinates.
    * @throws `TypeError` if `width` or `height` is not a number.
    * @throws `RangeError` if `width` or `height` value is not positive.
    * @throws `RangeError` if `width` is larger than strip width.
@@ -74,7 +73,7 @@ export class BestFitStripPack extends AbstractBestFitStripPack {
   }
 
   /**
-   * Clears all rectangles and resets to initial state.
+   * Resets the instance to initial state.
    */
   reset() {
     return reset(this.#obj);

@@ -3,11 +3,11 @@
 [![NPM Version](https://img.shields.io/npm/v/best-fit-strip-pack)](https://www.npmjs.com/package/best-fit-strip-pack)
 [![Coverage Status](https://img.shields.io/coverallsCoverage/github/styiannis/best-fit-strip-pack)](https://coveralls.io/github/styiannis/best-fit-strip-pack?branch=main)
 
-A TypeScript implementation of the best-fit algorithm for the 2D rectangular [strip packing problem](#references). The strip packing problem involves packing rectangles of varying dimensions into a strip of fixed width and infinite height, minimizing the total height used.
+A TypeScript implementation of the online best-fit algorithm for the 2D rectangular [strip packing problem](https://en.wikipedia.org/wiki/Strip_packing_problem). The strip packing problem involves packing rectangles of varying dimensions into a strip of fixed width and infinite height, minimizing the total height used.
 
-This library implements the **online best-fit heuristic**, which places each rectangle in the position that minimizes the increase to the overall strip height. The algorithm processes rectangles sequentially in insertion order without any pre-sorting or post-processing, making it suitable for real-time scenarios where rectangles arrive one by one.
+The algorithm places each rectangle in the position that minimizes the increase to the overall strip height, processing items sequentially in insertion order without pre-sorting. This makes it suitable for real-time scenarios where rectangles arrive one by one.
 
-Based on the paper "_[The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio](#references)_" by Shinji Imahori and Mutsunori Yagiura.
+Based on the best-fit heuristic described in "[The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio](https://doi.org/10.1016/j.cor.2009.05.008)" by Shinji Imahori and Mutsunori Yagiura.
 
 ## Features
 
@@ -157,11 +157,6 @@ The complete API reference of the library is available at the [code documentatio
 ## Issues and Support
 
 If you encounter any issues or have questions, please [open an issue](https://github.com/styiannis/best-fit-strip-pack/issues).
-
-## References
-
-1. [Strip packing problem - Wikipedia](https://en.wikipedia.org/wiki/Strip_packing_problem)
-2. Imahori, S., & Yagiura, M. (2010). The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio. _Computers & Operations Research, 37(2), 325–333_. https://doi.org/10.1016/j.cor.2009.05.008
 
 ## License
 
