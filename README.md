@@ -47,9 +47,9 @@ import { BestFitStripPack } from 'best-fit-strip-pack';
 const bfsp = new BestFitStripPack(100);
 
 // Insert rectangles
-console.log(bfsp.insert(30, 40)); // { x: 0, y: 0 }
-console.log(bfsp.insert(20, 60)); // { x: 30, y: 0 }
-console.log(bfsp.insert(50, 30)); // { x: 0, y: 40 }
+console.log(bfsp.insert(30, 20)); // { x: 0, y: 0 }
+console.log(bfsp.insert(20, 40)); // { x: 30, y: 0 }
+console.log(bfsp.insert(60, 10)); // { x: 0, y: 40 }
 
 // Get current packed dimensions
 console.log(`Used width: ${bfsp.packedWidth}, height: ${bfsp.packedHeight}`);
@@ -76,6 +76,8 @@ console.log(bfsp.insert(30, 20));
 ### Batch Processing
 
 ```typescript
+import { BestFitStripPack } from 'best-fit-strip-pack';
+
 const rectangles = [
   { width: 30, height: 40 },
   { width: 20, height: 60 },
