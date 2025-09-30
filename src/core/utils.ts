@@ -120,7 +120,7 @@ function getBestFitPosition<P extends IBestFitStripPack>(
   for (let i = 0, x = 1; i < instance.heap.length; i = x - 1) {
     x *= 2;
     for (let j = i; j < instance.heap.length && j < x - 1; j += 1) {
-      const listNode = instance.heap[j].listNode as NonNullable<
+      const listNode = instance.heap[j]!.listNode as NonNullable<
         P['list']['head']
       >;
 
