@@ -1,14 +1,14 @@
 {
   "name": "best-fit-strip-pack",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A TypeScript implementation of the online best-fit algorithm for the 2D rectangular strip packing problem.",
   "keywords": [
-    "2d packing",
-    "best fit",
+    "2d-packing",
+    "best-fit",
     "heuristic",
     "packing",
-    "rectangular packing",
-    "strip packing"
+    "rectangle-packing",
+    "strip-packing"
   ],
   "author": "Yiannis Stergiou <hello@styiannis.dev>",
   "license": "MIT",
