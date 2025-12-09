@@ -1,5 +1,10 @@
 function validatePositiveNumericDimensions(width: number, height: number) {
-  if (isNaN(width) || isNaN(height)) {
+  if (
+    'number' !== typeof width ||
+    'number' !== typeof height ||
+    Number.isNaN(width) ||
+    Number.isNaN(height)
+  ) {
     throw new TypeError(
       `Both dimensions (${width}x${height}) should be numerical values.`
     );
@@ -41,7 +46,7 @@ export function validateDimensionsRotatable(
 }
 
 export function validateStripWidth(stripWidth: number) {
-  if (isNaN(stripWidth)) {
+  if ('number' !== typeof stripWidth || Number.isNaN(stripWidth)) {
     throw new TypeError(
       `Strip width (${stripWidth}) should be numerical value.`
     );
