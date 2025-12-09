@@ -1,5 +1,5 @@
 import { BestFitStripPack, BestFitStripPackRotatable } from '../../src';
-import { isValidClassInstance } from '../tests-utils';
+import { isValidClassInstance } from '../util/isValidClassInstance';
 
 describe('classes', () => {
   describe('Initializing classes instances', () => {

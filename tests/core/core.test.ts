@@ -6,7 +6,7 @@ import {
   placementPoint,
   placementPointRotatable,
 } from '../../src/core/lib';
-import { isValidObjectInstance } from '../tests-utils';
+import { isValidObjectInstance } from '../util/isValidObjectInstance';
 
 describe('core', () => {
   describe('Initializing objects instances', () => {
