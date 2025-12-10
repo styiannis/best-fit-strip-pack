@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "abstract-linked-lists": "^1.1.0",
-    "addressable-binary-heaps": "^1.0.4"
+    "addressable-binary-heaps": "^1.1.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^16.0.3",
