@@ -56,7 +56,7 @@ function bestFitPlacement<P extends IBestFitStripPack>(
     removeAllNodesButTheFirst(
       instance,
       firstNode,
-      lastNode.previous ?? firstNode
+      lastNode.previous ?? firstNode // @note: At this point, "lastNode.previous !== null"
     );
 
     firstNode.width = w;
@@ -206,13 +206,13 @@ function removeAllNodesButTheFirst<P extends IBestFitStripPack>(
   firstNode: NonNullable<P['list']['head']>,
   lastNode: NonNullable<P['list']['head']>
 ) {
-  if (firstNode === lastNode) {
-    return;
-  }
-
-  for (let removeNode = firstNode.next, next; removeNode; removeNode = next) {
-    next = removeNode === lastNode ? null : removeNode.next;
-    removeRecord(instance, removeNode);
+  const stopNode = lastNode.next;
+  for (
+    let node = firstNode.next, next = node?.next ?? null;
+    node && node !== stopNode;
+    node = next, next = node?.next ?? null
+  ) {
+    removeRecord(instance, node);
   }
 }
 
@@ -254,7 +254,7 @@ function updatePackedDimensions<P extends IBestFitStripPack>(
   instance.packedHeight = Math.max(instance.packedHeight, newHeight);
   instance.packedWidth = instance.list.tail
     ? instance.list.tail.x + instance.list.tail.width
-    : 0;
+    : 0; // @note: At this point, "instance.list.tail !== null"
 }
 
 function validateBestFitPosition<P extends IBestFitStripPack>(

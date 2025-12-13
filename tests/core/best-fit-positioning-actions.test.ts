@@ -612,7 +612,7 @@ describe('Best-fit positioning', () => {
       });
     });
 
-    describe('Action: Remove rest nodes', () => {
+    describe('Action: Remove the rest of nodes', () => {
       const stripWidth = 1000;
       const instance = bfsp.create(stripWidth);
 

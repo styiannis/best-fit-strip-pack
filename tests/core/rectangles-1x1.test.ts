@@ -1,5 +1,5 @@
 import { bestFitStripPack, bestFitStripPackRotatable } from '../../src/core';
-import { isValidObjectInstance } from '../tests-utils';
+import { isValidObjectInstance } from '../util/isValidObjectInstance';
 
 describe.each([
   ['bestFitStripPack', bestFitStripPack],
