@@ -1,6 +1,6 @@
 {
   "name": "best-fit-strip-pack",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "A TypeScript implementation of the online best-fit algorithm for the 2D rectangular strip packing problem.",
   "keywords": [
     "2d-packing",
