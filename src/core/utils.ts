@@ -221,7 +221,7 @@ function removeRecord<P extends IBestFitStripPack>(
   listNode: NonNullable<P['list']['head']>
 ) {
   minHeap.heap.remove(instance.heap, listNode.heapNode);
-  doublyList.list.detachNode(instance.list, listNode);
+  doublyList.list.removeNode(instance.list, listNode);
 }
 
 function splitNode<P extends IBestFitStripPack>(
