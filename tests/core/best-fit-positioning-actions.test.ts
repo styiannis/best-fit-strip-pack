@@ -5,7 +5,7 @@ import {
 } from '../../src/core';
 import { IDoublyListNode } from '../../src/core/lib';
 
-type Rectangle = [number, number];
+type Rectangle = readonly [number, number];
 
 /* ----------------------------------------- */
 /* ---------- // Helper functions ---------- */
@@ -31,7 +31,7 @@ function insertAndConfirmRotatable(
 
 function insertInLineAndConfirm(
   instance: IBestFitStripPack,
-  rectangles: Rectangle[]
+  rectangles: readonly Rectangle[]
 ) {
   rectangles.reduce((totalWidth, [w, h]) => {
     const newPackedHeight = Math.max(instance.packedHeight, h);
@@ -49,7 +49,7 @@ function insertInLineAndConfirm(
 
 function insertInLineAndConfirmRotatable(
   instance: IBestFitStripPack,
-  rectangles: Rectangle[],
+  rectangles: readonly Rectangle[],
   rotated: boolean
 ) {
   rectangles.reduce((totalWidth, [w, h]) => {
@@ -105,13 +105,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Split the node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 20],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [50, 15];
 
@@ -195,13 +195,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Split the node + Merge with the previous node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 20],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [50, 20];
 
@@ -277,14 +277,14 @@ describe('Best-fit positioning', () => {
       });
 
       it('Split the node + Choose placement position based on "x" coordinate', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [100, 90],
           [200, 20],
           [300, 60],
           [200, 20],
           [100, 10],
           [100, 80],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [5, 150];
 
@@ -317,13 +317,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Cover the node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 20],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [200, 15];
 
@@ -399,13 +399,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Cover the node + Merge with the previous node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 20],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [200, 20];
 
@@ -473,13 +473,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Cover the node + Merge with the next node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 20],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [200, 30];
 
@@ -546,13 +546,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Cover the node + Merge with nodes on both sides', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 20],
           [200, 30],
           [200, 10],
           [200, 30],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [200, 20];
 
@@ -627,13 +627,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Cover last node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [600, 15];
 
@@ -693,13 +693,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Cover last node + Merge with the previous node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [600, 20];
 
@@ -743,13 +743,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Cover last node + Merge with the next node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [600, 10];
 
@@ -801,13 +801,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Cover last node + Merge with nodes on both sides', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 60],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [600, 20];
 
@@ -852,12 +852,12 @@ describe('Best-fit positioning', () => {
       });
 
       it('Exceed last node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 50],
           [200, 10],
           [200, 20],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [550, 250];
 
@@ -921,12 +921,12 @@ describe('Best-fit positioning', () => {
       });
 
       it('Exceed last node + Merge with the previous node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 100],
           [200, 10],
           [350, 20],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [570, 80];
 
@@ -982,12 +982,12 @@ describe('Best-fit positioning', () => {
       });
 
       it('Exceed last node + Merge all nodes', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 50],
           [200, 10],
           [200, 20],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [900, 250];
 
@@ -1048,13 +1048,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Split the node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [500, 15];
 
@@ -1126,13 +1126,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Split the node + Merge with the previous node', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [500, 20];
 
@@ -1196,13 +1196,13 @@ describe('Best-fit positioning', () => {
       });
 
       it('Split the node + Merge the rest of nodes', () => {
-        const rectangles: Rectangle[] = [
+        const rectangles = [
           [200, 60],
           [200, 30],
           [200, 10],
           [200, 40],
           [200, 50],
-        ];
+        ] as const;
 
         const extraRect: [number, number] = [900, 15];
 
