@@ -43,15 +43,15 @@ export function insert<P extends IBestFitStripPack>(
     return fitsInLine(instance, width)
       ? addInLineRotatable(instance, width, height, false)
       : fitsInLine(instance, height)
-      ? addInLineRotatable(instance, height, width, true)
-      : addBestFitRotatable(instance, width, height);
+        ? addInLineRotatable(instance, height, width, true)
+        : addBestFitRotatable(instance, width, height);
   }
 
   return fitsInLine(instance, height)
     ? addInLineRotatable(instance, height, width, true)
     : fitsInLine(instance, width)
-    ? addInLineRotatable(instance, width, height, false)
-    : addBestFitRotatable(instance, width, height);
+      ? addInLineRotatable(instance, width, height, false)
+      : addBestFitRotatable(instance, width, height);
 }
 
 export function reset<P extends IBestFitStripPack>(instance: P) {

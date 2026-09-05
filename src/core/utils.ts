@@ -282,8 +282,8 @@ function validateBestFitPosition<P extends IBestFitStripPack>(
       firstNode === lastNode
         ? 'first-only'
         : width === totalWidth
-        ? 'merge-all'
-        : 'merge-and-split-last';
+          ? 'merge-all'
+          : 'merge-and-split-last';
 
     return;
   }
