@@ -13,7 +13,28 @@ describe('Invalid strip width value', () => {
 
       // @ts-expect-error
       expect(() => new BFSP(stripWidth)).toThrow(
-        `Strip width (${stripWidth}) should be numerical value.`
+        `Strip width ("${stripWidth}") should be numerical value.`
+      );
+    });
+
+    it('The strip width value is a numeric string', () => {
+      // @ts-expect-error
+      expect(() => new BFSP('10')).toThrow(
+        'Strip width ("10") should be numerical value.'
+      );
+    });
+
+    it('The strip width value is a symbol', () => {
+      // @ts-expect-error
+      expect(() => new BFSP(Symbol('w'))).toThrow(
+        'Strip width (symbol) should be numerical value.'
+      );
+    });
+
+    it('The strip width value is null', () => {
+      // @ts-expect-error
+      expect(() => new BFSP(null)).toThrow(
+        'Strip width (null) should be numerical value.'
       );
     });
 
@@ -54,7 +75,7 @@ describe('Invalid rectangle dimensions', () => {
 
       // @ts-expect-error
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
-        `Both dimensions (${rectangle.width}x${rectangle.height}) should be numerical values.`
+        `Both dimensions ("${rectangle.width}"x${rectangle.height}) should be numerical values.`
       );
     });
 
@@ -70,7 +91,7 @@ describe('Invalid rectangle dimensions', () => {
 
       // @ts-expect-error
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
-        `Both dimensions (${rectangle.width}x${rectangle.height}) should be numerical values.`
+        `Both dimensions (${rectangle.width}x"${rectangle.height}") should be numerical values.`
       );
     });
 
@@ -86,7 +107,25 @@ describe('Invalid rectangle dimensions', () => {
 
       // @ts-expect-error
       expect(() => instance.insert(rectangle.width, rectangle.height)).toThrow(
-        `Both dimensions (${rectangle.width}x${rectangle.height}) should be numerical values.`
+        `Both dimensions ("${rectangle.width}"x"${rectangle.height}") should be numerical values.`
+      );
+    });
+
+    it('The width value is a numeric string', () => {
+      const instance = new BFSP(1000);
+
+      // @ts-expect-error
+      expect(() => instance.insert('50', 10)).toThrow(
+        'Both dimensions ("50"x10) should be numerical values.'
+      );
+    });
+
+    it('The height value is a symbol', () => {
+      const instance = new BFSP(1000);
+
+      // @ts-expect-error
+      expect(() => instance.insert(50, Symbol('h'))).toThrow(
+        'Both dimensions (50xsymbol) should be numerical values.'
       );
     });
 

@@ -1,3 +1,15 @@
+function describe(value: unknown) {
+  if (typeof value === 'number') {
+    return String(value);
+  }
+
+  if (typeof value === 'string') {
+    return JSON.stringify(value);
+  }
+
+  return value === null ? 'null' : typeof value;
+}
+
 function validatePositiveNumericDimensions(width: number, height: number) {
   if (
     'number' !== typeof width ||
@@ -6,7 +18,7 @@ function validatePositiveNumericDimensions(width: number, height: number) {
     Number.isNaN(height)
   ) {
     throw new TypeError(
-      `Both dimensions (${width}x${height}) should be numerical values.`
+      `Both dimensions (${describe(width)}x${describe(height)}) should be numerical values.`
     );
   }
 
@@ -48,7 +60,7 @@ export function validateDimensionsRotatable(
 export function validateStripWidth(stripWidth: number) {
   if ('number' !== typeof stripWidth || Number.isNaN(stripWidth)) {
     throw new TypeError(
-      `Strip width (${stripWidth}) should be numerical value.`
+      `Strip width (${describe(stripWidth)}) should be numerical value.`
     );
   }
 
