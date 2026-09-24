@@ -1,6 +1,6 @@
 # Architecture and API
 
-**Last verified:** 2026-09-24 · v1.1.0
+**Last verified:** 2026-09-25 · v1.2.0
 
 ## The public surface is two classes
 

@@ -5,7 +5,7 @@ rectangle could occupy, which one raises the top of the packing least? This
 page is the answer in full — the rule, the state it is computed from, what the
 search costs, and how good the result is.
 
-**Last verified:** 2026-09-24 · v1.1.0
+**Last verified:** 2026-09-25 · v1.2.0
 
 ## The skyline is the whole state
 

@@ -3,7 +3,7 @@
 From an empty strip to a packed sheet: how to insert rectangles, what the
 coordinates mean, when the packer rotates something, and what it refuses.
 
-**Last verified:** 2026-09-24 · v1.1.0 · Node ≥ 18.12
+**Last verified:** 2026-09-25 · v1.2.0 · Node ≥ 18.12
 
 ## Install
 
