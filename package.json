@@ -1,17 +1,19 @@
 {
   "name": "best-fit-strip-pack",
   "version": "1.1.0",
-  "description": "A TypeScript implementation of the online best-fit algorithm for the 2D rectangular strip packing problem.",
+  "description": "Online best-fit strip packing for TypeScript: each rectangle is placed once, as it arrives, and only the skyline of the packing is kept.",
   "keywords": [
+    "strip-packing",
+    "rectangle-packing",
     "2d-packing",
     "best-fit",
-    "heuristic",
+    "skyline",
     "packing",
-    "rectangle-packing",
-    "strip-packing"
+    "typescript"
   ],
   "author": "Yiannis Stergiou <hello@styiannis.dev>",
   "license": "MIT",
+  "homepage": "https://github.com/styiannis/best-fit-strip-pack",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/styiannis/best-fit-strip-pack.git"

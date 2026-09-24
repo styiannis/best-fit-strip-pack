@@ -3,163 +3,152 @@
 [![NPM Version](https://img.shields.io/npm/v/best-fit-strip-pack)](https://www.npmjs.com/package/best-fit-strip-pack)
 [![Coverage Status](https://img.shields.io/coverallsCoverage/github/styiannis/best-fit-strip-pack)](https://coveralls.io/github/styiannis/best-fit-strip-pack?branch=main)
 
-A TypeScript implementation of the online best-fit algorithm for the 2D rectangular [strip packing problem](https://en.wikipedia.org/wiki/Strip_packing_problem). The strip packing problem involves packing rectangles of varying dimensions into a strip of fixed width and infinite height, minimizing the total height used.
+Rectangles of arbitrary sizes packed into a strip of **fixed width and
+unbounded height**, one at a time, each placed where it adds the least height.
+Nothing is moved after it is placed, and nothing is kept: the packer returns a
+coordinate and remembers only the profile of what it has filled. A second
+class may also turn each rectangle a quarter turn, and reports when it did.
 
-The algorithm places each rectangle in the position that minimizes the increase to the overall strip height, processing items sequentially in insertion order without pre-sorting. This makes it suitable for real-time scenarios where rectangles arrive one by one.
-
-Based on the best-fit heuristic described in "[The best-fit heuristic for the rectangular strip packing problem: An efficient implementation and the worst-case approximation ratio](https://doi.org/10.1016/j.cor.2009.05.008)" by Shinji Imahori and Mutsunori Yagiura.
-
-## Features
-
-- **Online Best-Fit Heuristic**: Places each rectangle in the position that minimizes the increase to overall strip height, processing items in insertion order
-- **Real-time Processing**: Handles rectangles sequentially without pre-sorting or post-processing
-- **Rotation Support**: Optional variant that automatically considers both rectangle orientations for better space utilization
-- **Optimized Data Structures**: Uses linked lists and min-heaps for high-performance operations
-
-## Installation
-
-### Install via npm
+## Install
 
 ```bash
 npm install best-fit-strip-pack
 ```
 
-### Install via yarn
+`yarn add` and `pnpm add` work the same way. The package requires Node 18.12 or
+later, and ships an ES build and a CommonJS build with type definitions for
+each. Its two runtime dependencies are
+[abstract-linked-lists](https://www.npmjs.com/package/abstract-linked-lists)
+and
+[addressable-binary-heaps](https://www.npmjs.com/package/addressable-binary-heaps),
+imported through three subpaths, so that a bundler takes only the five modules
+behind them.
 
-```bash
-yarn add best-fit-strip-pack
-```
+## Each rectangle is placed when it arrives
 
-### Install via pnpm
-
-```bash
-pnpm install best-fit-strip-pack
-```
-
-## Usage
-
-### Basic Packing (Without Rotation)
+`insert` takes a width and a height and returns the coordinates it chose for
+the bottom-left corner. There is no batch call and no second pass:
 
 ```typescript
 import { BestFitStripPack } from 'best-fit-strip-pack';
 
-// Create an instance for a strip of width 100 units
-const bfsp = new BestFitStripPack(100);
+const strip = new BestFitStripPack(1000);
 
-// Insert rectangles
-console.log(bfsp.insert(30, 20)); // { x: 0, y: 0 }
-console.log(bfsp.insert(20, 40)); // { x: 30, y: 0 }
-console.log(bfsp.insert(60, 10)); // { x: 0, y: 40 }
+console.log(strip.insert(400, 300)); // { x: 0, y: 0 }
+console.log(strip.insert(300, 500)); // { x: 400, y: 0 }
+console.log(strip.insert(300, 200)); // { x: 700, y: 0 }
+console.log(strip.insert(500, 250)); // { x: 0, y: 500 }
+console.log(strip.insert(200, 400)); // { x: 700, y: 200 }
 
-// Get current packed dimensions
-console.log(`Used width: ${bfsp.packedWidth}, height: ${bfsp.packedHeight}`);
-
-// Reset for a new packing sequence
-bfsp.reset();
+console.log(strip.packedWidth, strip.packedHeight); // 1000 750
 ```
 
-### Packing with Rotation
+The first three fill the floor of the strip from the left. The fourth is too
+wide for any gap and goes above everything at `y = 500`. The fifth is the one
+that shows the heuristic working: it drops into the 300-wide gap at `x = 700`,
+whose surface is at `y = 200`, rather than onto the top of the packing.
+
+Coordinates are measured from the corner where the first rectangle lands, with
+`x` across the fixed width and `y` along the growing direction. Which corner of
+a screen or a canvas that is remains the caller's choice; the packer produces
+numbers and nothing else.
+
+## Rotation, when the caller permits it
+
+`BestFitStripPackRotatable` evaluates both orientations of every rectangle and
+reports which one it used. A `rotated` result means the placed box measures
+`height × width`:
 
 ```typescript
 import { BestFitStripPackRotatable } from 'best-fit-strip-pack';
 
-const bfsp = new BestFitStripPackRotatable(100);
+const strip = new BestFitStripPackRotatable(1000);
 
-// The algorithm will automatically choose the best orientation
-console.log(bfsp.insert(40, 60));
-// { x: 0, y: 0, rotated: true } - rectangle was rotated to 60x40
-
-console.log(bfsp.insert(30, 20));
-// { x: 60, y: 0, rotated: false } - placed in original orientation
-```
-
-### Batch Processing
-
-```typescript
-import { BestFitStripPack } from 'best-fit-strip-pack';
-
-const rectangles = [
-  { width: 30, height: 40 },
-  { width: 20, height: 60 },
-  { width: 50, height: 30 },
-  { width: 10, height: 20 },
-  { width: 60, height: 50 },
-];
-
-const bfsp = new BestFitStripPack(100);
-
-const packedItems = [];
-
-for (const rect of rectangles) {
-  const position = bfsp.insert(rect.width, rect.height);
-  packedItems.push({ ...rect, ...position });
+for (const [w, h] of [
+  [400, 300],
+  [300, 500],
+  [300, 200],
+  [500, 250],
+  [200, 400],
+] as [number, number][]) {
+  const at = strip.insert(w, h);
+  console.log(w, h, at, at.rotated ? [h, w] : [w, h]);
 }
+// 400 300 { x: 0, y: 0, rotated: false } [ 400, 300 ]
+// 300 500 { x: 400, y: 0, rotated: true } [ 500, 300 ]
+// 300 200 { x: 0, y: 300, rotated: false } [ 300, 200 ]
+// 500 250 { x: 300, y: 300, rotated: false } [ 500, 250 ]
+// 200 400 { x: 800, y: 300, rotated: false } [ 200, 400 ]
 
-console.log(`Final strip height: ${bfsp.packedHeight}`);
-// Final strip height: 110
-
-console.log('Packed items:', packedItems);
-// Packed items: [
-//   { width: 30, height: 40, x: 0, y: 0 },
-//   { width: 20, height: 60, x: 30, y: 0 },
-//   { width: 50, height: 30, x: 50, y: 0 },
-//   { width: 10, height: 20, x: 50, y: 30 },
-//   { width: 60, height: 50, x: 0, y: 60 }
-// ]
+console.log(strip.packedHeight); // 700
 ```
 
-## API Reference
+The same five rectangles reach 750 without rotation and 700 with it. That
+margin is a property of these five and not a guarantee: rotation helps most
+when the strip is narrow relative to the rectangles, and on rectangles taller
+than they are wide it can finish _higher_ than the plain class.
+[The placement write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/placement-algorithm.md) measures both.
 
-### Core Classes
+## What it holds while it packs
 
-**`BestFitStripPack`**
+The packer stores the **skyline** — the horizontal profile of what has been
+filled — and not the rectangles. What it retains grows with the number of
+segments in that profile, which the width of the strip bounds, and not with the
+number of rectangles packed.
 
-Main class implementing the Best-Fit algorithm without rotation.
+The cost of an insertion follows the same quantity. It is set by the number of
+segments in the skyline, which depends on the strip width relative to the
+rectangles, not on how many are already packed: a wider strip makes each
+insertion dearer, and a longer run of insertions does not.
+[The placement write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/placement-algorithm.md#what-the-search-costs)
+measures the cost, and
+[the architecture write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/architecture-and-api.md#what-it-costs-in-memory)
+the memory.
 
-```typescript
-new BestFitStripPack(stripWidth: number)
-```
+## API
 
-**Properties:**
+Two classes with the same shape. `BestFitStripPackRotatable` differs only in
+what `insert` accepts and returns.
 
-- `packedHeight: number` - Current total height of the packed strip
-- `packedWidth: number` - Current total width of the packed strip
-- `stripWidth: number` - Fixed width of the strip
+| Member                       | Cost   | Notes                                             |
+| ---------------------------- | ------ | ------------------------------------------------- |
+| `new BestFitStripPack(w)`    | `O(1)` | `w` is fixed for the life of the instance         |
+| `insert(width, height)`      | `O(m)` | `m` = skyline segments; `O(m²)` in the worst case |
+| `packedWidth` `packedHeight` | `O(1)` | Both only grow, until `reset()`                   |
+| `stripWidth`                 | `O(1)` | The `w` given to the constructor                  |
+| `reset()`                    | `O(m)` | Empties the strip, keeping the width              |
 
-**Methods:**
+`insert` returns `{ x, y }`, or `{ x, y, rotated }` from the rotatable class,
+and throws `TypeError` on a non-numeric dimension and `RangeError` on one that
+is not positive or does not fit the strip.
 
-- `insert(width: number, height: number): { x: number; y: number }`
-- `reset(): void`
+## When not to use it
 
----
+The packer places each rectangle once and keeps nothing but the profile. What
+follows are the cases where that is the wrong trade.
 
-**`BestFitStripPackRotatable`**
+| If this describes the problem                     | Reach for                                                                                                                               |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| A placed rectangle must later be removed or moved | a repack from a list you keep — there is no `remove` and no handle to a placement, and the only way back is `reset()`                   |
+| The layout must be read back from the packer      | that same list — each coordinate is returned once and not recorded                                                                      |
+| Every rectangle is known before packing starts    | this packer over the input sorted by decreasing height, which it never does itself and which covers noticeably more of the strip        |
+| The packing must be optimal                       | an exact method, on inputs small enough for one — strip packing is NP-hard, and this is a heuristic that leaves part of the strip empty |
+| The strip has a maximum height                    | a bin-packing algorithm — the strip is unbounded, and a rectangle is never rejected for being too tall                                  |
 
-Extends the basic algorithm to support rectangle rotation.
+## Documentation
 
-```typescript
-new BestFitStripPackRotatable(stripWidth: number)
-```
+- [Guides, the placement rules, the FAQ and the architecture write-up](https://github.com/styiannis/best-fit-strip-pack/tree/main/docs) —
+  packing the first rectangles, where a rectangle goes and how good the result
+  is, the behaviour that surprises people, and how the library is built.
+- [The generated API reference](https://styiannis.github.io/best-fit-strip-pack/) —
+  every signature and every type.
+- [Open an issue](https://github.com/styiannis/best-fit-strip-pack/issues)
+  for a question or a bug report.
 
-**Properties:**
+The heuristic is the one described in Shinji Imahori and Mutsunori Yagiura,
+_The best-fit heuristic for the rectangular strip packing problem: an
+efficient implementation and the worst-case approximation ratio_,
+[doi:10.1016/j.cor.2009.05.008](https://doi.org/10.1016/j.cor.2009.05.008).
 
-- `packedHeight: number` - Current total height of the packed strip
-- `packedWidth: number` - Current total width of the packed strip
-- `stripWidth: number` - Fixed width of the strip (readonly)
-
-**Methods:**
-
-- `insert(width: number, height: number): { x: number; y: number; rotated: boolean }`
-- `reset(): void`
-
-## Code documentation
-
-The complete API reference of the library is available at the [code documentation site](https://styiannis.github.io/best-fit-strip-pack/).
-
-## Issues and Support
-
-If you encounter any issues or have questions, please [open an issue](https://github.com/styiannis/best-fit-strip-pack/issues).
-
-## License
-
-This project is licensed under the [MIT License](https://github.com/styiannis/best-fit-strip-pack?tab=MIT-1-ov-file#readme).
+Released under the
+[MIT License](https://github.com/styiannis/best-fit-strip-pack/blob/main/LICENSE).
