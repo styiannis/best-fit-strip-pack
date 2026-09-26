@@ -233,11 +233,11 @@ console.log(sorted.packedHeight); // 70
 ```
 
 The same five rectangles reach 75 in the order they are written and 70 sorted
-by decreasing height. Over 10,000 rectangles 5 to 84 wide and 5 to 64 tall,
-the same sort took the fraction of the packed area the rectangles cover from
-90.4% to 97.1%. Sort when you have every rectangle in advance; when they
-arrive one at a time, you cannot, and packing them as they come is what this
-library is for.
+by decreasing height. Over 10,000 rectangles 5 to 84 wide and 5 to 64 tall, in
+a strip 1,000 wide, the same sort took the fraction of the packed area the
+rectangles cover from 90.4% to 97.1%. Sort when you have every rectangle in
+advance; when they arrive one at a time, you cannot, and packing them as they
+come is what this library is for.
 
 ## What this page did not cover
 

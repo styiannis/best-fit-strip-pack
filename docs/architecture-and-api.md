@@ -90,32 +90,30 @@ ordering is read only by iterating the underlying array.
 
 The search visits the segments in the order of that array, level by level, and
 rejects any segment already taller than the best height found so far with a
-single comparison. The order is not what makes it fast. The same search run
-over the list, left to right, produces **identical placements** — 160,000
-insertions compared across eight configurations, both classes included, no
-difference. Timed against the heap walk written the same way, the list walk
-took the same time or less in every run, and 5 to 10% less in strips 10,000
-wide. The two were written around one shared inner step for that comparison,
-because inlining the step, as the shipped function does, is by itself worth up
-to 13%.
+single comparison. The order is not what makes it fast. The same search run over
+the list, left to right, produces **identical placements** — 160,000 insertions
+compared across eight configurations, both classes included, no difference.
+Timed against the heap walk written the same way, and taking the median of three
+runs, the list walk took the same time or less in every configuration, and 5 to
+8% less in strips 10,000 wide. In a single run it was up to 9% slower. The two
+were written around one shared inner step for that comparison, because inlining
+the step, as the shipped function does, is by itself worth up to 10%.
 
-The order is also not guaranteed to hold. Under `addressable-binary-heaps`
-1.1.0, `remove` does not restore it in every case, and the skyline removes
-segments on every merge, so the array is often not a valid heap: after 16,663
-of 20,000 insertions into a strip 10,000 wide, it was not one. The placements
-do not change, because the search examines every segment whatever its position
-in the array.
+The order does hold. The heap restores it after every `remove` and `increase`,
+and the array was a valid heap after each of 20,000 insertions into strips 100,
+1,000 and 10,000 wide. The search does not depend on it, because it examines
+every segment whatever its position in the array.
 
 The array walk is written as a pair of nested loops that step through the heap
 level by level. The indices it produces are exactly `0` to `length - 1`, which
 is what a single loop would produce, and a single loop gives the same
-placements. Neither form is faster everywhere: written the same way, the single
-loop was level or up to 6% faster in strips 100 and 1,000 wide, and 5 to 13%
-slower in every run in strips 10,000 wide, where the search costs most. The
-levels would also support an early exit, since in a valid min-heap no child is
-shorter than its parent. That exit is not implemented. Where the order holds it
-gives the same placements with no consistent gain in time, and where it does not
-hold it gives different ones.
+placements. Neither form is faster everywhere. Written the same way, the single
+loop was 8 to 9% faster in strips 100 and 1,000 wide, and 6 to 7% slower in
+strips 10,000 wide, where the search costs most and where it was slower in every
+run. The levels would also support an early exit, since in a valid min-heap no
+child is shorter than its parent. That exit is not implemented. Tried, it gave
+the same placements, and its time stayed within 4% of the walk without it, lower
+in some configurations and higher in others.
 
 ## Why these two dependencies
 
@@ -162,35 +160,34 @@ segments and never exceeded 45. The rotatable class searches twice only when
 both orientations fit the width; when one side is wider than the strip, only the
 other orientation is searched.
 
-`reset` is linear because of the heap: clearing it deletes each element from
-the index map before the array is truncated. Clearing the list is `O(1)` — it
-drops its head and tail and lets the segments be collected — so the whole
-operation is one pass over the segments and nothing more.
+`reset` is linear in both structures. Clearing the list sets both pointers of
+every node to `null` before it drops the head and the tail, and clearing the
+heap deletes each element from the index map before the array is truncated. The
+whole operation is two passes over the segments and nothing more.
 
 ## What it costs in memory
 
 Only the skyline is retained, so the figure is bounded by the shape of the
 profile rather than by the number of rectangles. It is not constant, because the
-heap array and its index map keep the capacity of the highest segment count
-reached. A single packer is too small to weigh against process noise, so each
-figure below comes from 500 instances built and held together in a process of
-their own, all given the same rectangles — widths drawn uniformly from 5 to 84,
-heights from 5 to 64 — in a strip 1,000 wide. Collection was repeated before
-each reading until the memory in use stopped moving, and the rectangles were
-generated before the baseline, so they are outside every figure. Kilobytes are
-1,000 bytes:
+number of segments changes with every insertion. A single packer is too small to
+weigh against process noise, so each figure below comes from 500 instances built
+and held together in a process of their own, all given the same rectangles —
+widths drawn uniformly from 5 to 84, heights from 5 to 64 — in a strip 1,000
+wide. Collection was repeated before each reading until the memory in use
+stopped moving, and the rectangles were generated before the baseline, so they
+are outside every figure. Kilobytes are 1,000 bytes:
 
 | Rectangles packed | Retained per packer |
 | ----------------- | ------------------- |
 | none              | 0.4 KB              |
 | 1,000             | 6.8 KB              |
-| 100,000           | about 15 KB         |
+| 100,000           | 6.1 KB              |
 
-A hundredfold increase in input a little more than doubles the retained
-memory, which is the high-water mark growing and not the rectangles
-accumulating: at any moment the list holds one node per segment and nothing
-else. The first two figures came back identical on three runs; the third moved
-between 14.7 and 15.4 KB.
+A hundredfold increase in input does not raise the retained memory. At any
+moment the list holds one node per segment and the heap one element per
+segment, and nothing else. This packing ended with 36 segments after 1,000
+rectangles and 30 after 100,000, which is why the last figure is the lower one.
+Each figure moved by at most 0.1 KB over three runs.
 
 For comparison, the 100,000 placement objects the packer returned along the way
 would retain 4.8 MB, at 10⁶ bytes to the megabyte, if the caller kept them all
@@ -207,14 +204,13 @@ packer deliberately does not keep, is the usual reason to write such a wrapper.
 ## Tooling
 
 TypeScript 5.9 in `strict` mode with `exactOptionalPropertyTypes` and
-`noUncheckedIndexedAccess`. Rollup runs four times — the ES build, the
-CommonJS build and a declaration tree for each — every one of them with
+`noUncheckedIndexedAccess`. Rollup runs four times — the ES build, the CommonJS
+build and a declaration tree for each — every one of them with
 `preserveModules`, so the output mirrors `src/` file for file, with both
-dependencies marked external, and every one labelled by extension:
-`.mjs` and `.d.mts` on one side, `.cjs` and `.d.cts` on the other. Two scripts
-check the result. `check-declared-paths` verifies that each path
-declared in `package.json` exists in the build and carries the extension the
-condition above it implies; `check-dist-loads` loads each built entry the way
-a consumer would, one with `require` and one with `import`. Jest covers both
-layers, and `npm run verify` runs the type check, the linter, the build and
-both checks in sequence.
+dependencies marked external, and every one labelled by extension: `.mjs` and
+`.d.mts` on one side, `.cjs` and `.d.cts` on the other. Two scripts check the
+result. `check-declared-paths` verifies that every path `package.json` declares
+exists, and that every entry point has the extension its condition implies;
+`check-dist-loads` loads each built entry the way a consumer would, one with
+`require` and one with `import`. Jest covers both layers, and `npm run verify`
+runs the type check, the linter, the build and both checks in sequence.

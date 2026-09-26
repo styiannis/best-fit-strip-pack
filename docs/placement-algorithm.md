@@ -160,16 +160,16 @@ at every insertion:
 | ----------- | ------------- | ------- | ----------------- |
 | 100         | 5.2           | 13      | 5 ms              |
 | 1,000       | 29.0          | 45      | 10 ms             |
-| 10,000      | 285.3         | 326     | 44–55 ms          |
+| 10,000      | 285.3         | 326     | 42–55 ms          |
 
 The segment counts are exact for this input. The timings are one machine's
 (Node 22.12.0). Each is the median of three processes, and each process
 reports the median of fifteen rounds. The one for a strip 10,000 wide moved
-between 44 and 55 ms across three runs of the whole set. What travels is the
+between 42 and 55 ms across three runs of the whole set. What travels is the
 shape. Widening the strip a hundredfold multiplied the segment count by about
 55 and the time by about 10, so the cost follows `m` but well below proportion.
-The number ofrectangles already packed does not enter into it at all: packing
-10,000 and 100,000 rectangles into a strip 1,000 wide took 4.9 ms and 50 ms,
+The number of rectangles already packed does not enter into it at all: packing
+10,000 and 100,000 rectangles into a strip 1,000 wide took 5.0 ms and 50 ms,
 half a microsecond per insertion either way.
 
 ## How good the packing is
