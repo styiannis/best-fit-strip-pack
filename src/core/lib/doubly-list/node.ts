@@ -1,7 +1,4 @@
-import {
-  create as nodeCreate,
-  detach as nodeDetach,
-} from 'abstract-linked-lists/doubly-linked-list/node';
+import { create as nodeCreate } from 'abstract-linked-lists/doubly-linked-list/node';
 import { IDoublyListNode } from '../types';
 
 export function create<N extends IDoublyListNode>(
@@ -26,8 +23,4 @@ export function attachNext<N extends IDoublyListNode>(instance: N, node: N) {
 
   node.previous = instance;
   instance.next = node;
-}
-
-export function detach<N extends IDoublyListNode>(instance: N) {
-  return nodeDetach(instance);
 }

@@ -131,12 +131,10 @@ list and three from the heap, and not the libraries around them. The package
 roots are named once each, in `core/lib/types.ts`, by type imports that the
 build erases.
 
-`core/lib/doubly-list/list.ts` wraps `create`, `clear` and `pushNode` from the
-dependency in functions of its own and implements two operations itself:
-detaching a node from the middle of the list, and inserting one directly after
-another. The skyline does both constantly — every merge detaches and every split
-inserts — and neither is offered at the list level, because a list that does not
-know what its nodes mean cannot maintain `size` for an edit it did not perform.
+`core/lib/doubly-list/list.ts` wraps `create`, `clear`, `pushNode` and
+`removeNode` from the dependency in functions of its own and implements one
+operation itself: inserting a node directly after another. The skyline does it
+constantly — every split inserts — and the dependency does not offer it.
 
 ## Complexity
 
