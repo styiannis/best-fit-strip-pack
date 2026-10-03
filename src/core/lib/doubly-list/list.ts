@@ -2,9 +2,10 @@ import {
   clear as listClear,
   create as listCreate,
   pushNode as listPushNode,
+  removeNode as listRemoveNode,
 } from 'abstract-linked-lists/doubly-linked-list/list';
 import { IDoublyList } from '../types';
-import { attachNext, detach } from './node';
+import { attachNext } from './node';
 
 export function create<L extends IDoublyList>() {
   return listCreate<L>();
@@ -14,22 +15,11 @@ export function clear<L extends IDoublyList>(instance: L) {
   return listClear(instance);
 }
 
-export function detachNode<L extends IDoublyList>(
+export function removeNode<L extends IDoublyList>(
   instance: L,
   node: NonNullable<L['head']>
 ) {
-  if (node === instance.head) {
-    instance.head = node.next;
-  }
-
-  if (node === instance.tail) {
-    instance.tail = node.previous;
-  }
-
-  detach(node);
-  instance.size -= 1;
-
-  return node;
+  return listRemoveNode(instance, node);
 }
 
 export function insertNextNode<L extends IDoublyList>(
