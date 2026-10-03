@@ -9,7 +9,10 @@ export function isValidClassInstance(
   instance: any,
   instanceType: 'BestFitStripPack' | 'BestFitStripPackRotatable'
 ) {
-  const propertyNames = Object.getOwnPropertyNames(instance).sort();
+  const propertyNames = Object.getOwnPropertyNames(instance).sort(
+    (a: string, b: string) => a.localeCompare(b)
+  );
+
   const proto = Object.getPrototypeOf(instance);
 
   if (
