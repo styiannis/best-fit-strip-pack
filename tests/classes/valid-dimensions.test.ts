@@ -47,7 +47,7 @@ describe('Rectangles with dimensions that exceed the width of the strip', () => 
       const rectangles = [
         { width: stripWidth - 1, height: 1 },
         { width: stripWidth + 1, height: 3 },
-      ];
+      ] as const;
 
       const point1 = instance.insert(rectangles[0].width, rectangles[0].height);
 
@@ -84,7 +84,7 @@ describe('Rectangles with dimensions that exceed the width of the strip', () => 
       const rectangles = [
         { width: stripWidth - 1, height: 1 },
         { width: 3, height: stripWidth + 1 },
-      ];
+      ] as const;
 
       const point1 = instance.insert(rectangles[0].width, rectangles[0].height);
 
@@ -126,7 +126,7 @@ describe('Rectangles with a greater width than height', () => {
       const rectangles = [
         { width: stripWidth - 1, height: 3 },
         { width: stripWidth - 5, height: 1 },
-      ];
+      ] as const;
 
       const point1 = instance.insert(rectangles[0].width, rectangles[0].height);
 
@@ -168,7 +168,7 @@ describe('Rectangles with a greater height than width', () => {
       const rectangles = [
         { width: stripWidth - 30, height: 4 },
         { width: 10, height: 45 },
-      ];
+      ] as const;
 
       const point1 = instance.insert(rectangles[0].width, rectangles[0].height);
 
@@ -192,7 +192,7 @@ describe('Rectangles with a greater height than width', () => {
       const rectangles = [
         { width: stripWidth - 30, height: 4 },
         { width: 15, height: 20 },
-      ];
+      ] as const;
 
       const point1 = instance.insert(rectangles[0].width, rectangles[0].height);
 
