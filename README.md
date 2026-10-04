@@ -3,12 +3,13 @@
 [![NPM Version](https://img.shields.io/npm/v/best-fit-strip-pack)](https://www.npmjs.com/package/best-fit-strip-pack)
 [![Coverage Status](https://img.shields.io/coverallsCoverage/github/styiannis/best-fit-strip-pack)](https://coveralls.io/github/styiannis/best-fit-strip-pack?branch=main)
 
-Rectangles of arbitrary sizes packed into a strip of **fixed width and
-unbounded height**, one at a time, each placed where it adds the least height.
-Nothing is moved after it is placed, and no rectangle is kept: the packer
-returns a coordinate and remembers only the profile of what it has filled. A
-second class may also turn each rectangle a quarter turn, and reports when it
-did.
+Rectangles of arbitrary sizes packed into a strip of **fixed width and unbounded
+height**, one at a time, each placed as low as it fits. It is the **best-fit
+heuristic** for strip packing in its **online** form: each rectangle is placed
+as it arrives and never moved. None is kept, because the packer returns a
+coordinate and remembers only the top edge of what it has filled. A rotatable
+variant chooses an orientation for every rectangle and returns which one it
+used.
 
 ## Install
 
@@ -19,9 +20,9 @@ npm install best-fit-strip-pack
 `yarn add` and `pnpm add` work the same way. The package requires Node 18.12 or
 later, and ships an ES build and a CommonJS build with type definitions for
 each. Its two runtime dependencies are
-[abstract-linked-lists](https://www.npmjs.com/package/abstract-linked-lists)
+[abstract-linked-lists](https://github.com/styiannis/abstract-linked-lists)
 and
-[addressable-binary-heaps](https://www.npmjs.com/package/addressable-binary-heaps),
+[addressable-binary-heaps](https://github.com/styiannis/addressable-binary-heaps),
 imported through three subpaths, so that a bundler takes only the five modules
 behind them.
 
@@ -56,9 +57,11 @@ numbers and nothing else.
 
 ## Rotation, when the caller permits it
 
-`BestFitStripPackRotatable` evaluates both orientations of every rectangle and
-reports which one it used. A `rotated` result means the placed box measures
-`height × width`:
+`BestFitStripPackRotatable` chooses an orientation for every rectangle and
+reports which one it used. While the floor has room, it lays the rectangle on
+its longer side, or stands it up when only that fits. Above the floor, it
+evaluates each orientation that fits the strip and keeps the one whose top ends
+lower. `rotated: true` means the placed rectangle measures `height × width`:
 
 ```typescript
 import { BestFitStripPackRotatable } from 'best-fit-strip-pack';
@@ -84,51 +87,64 @@ for (const [w, h] of [
 console.log(strip.packedHeight); // 700
 ```
 
-The same five rectangles reach 750 without rotation and 700 with it. That
-margin is a property of these five and not a guarantee: rotation helps most
-when the strip is narrow relative to the rectangles, and on rectangles taller
-than they are wide it can finish _higher_ than the plain class.
+The same five rectangles reach 750 without rotation and 700 with it. That margin
+is a property of these five and not a guarantee: rotation helps most when the
+strip is narrow relative to the rectangles. On rectangles taller than they are
+wide it can finish _higher_ than the plain class, which could be a better choice
+for such input.
 
-## What it holds while it packs
+## What it stores, and what an insertion costs
 
-The packer stores the **skyline** — the horizontal profile of what has been
-filled — and not the rectangles. What it retains grows with the number of
-segments in that profile, which depends on the strip width relative to the
-rectangles, and not with the number of rectangles packed.
+The packer does not keep the rectangles. It keeps the **skyline**: the top edge
+of the area filled so far, traced from left to right across the strip. The
+skyline is flat in stretches and steps up or down between them, and each flat
+stretch is a **segment**. An insertion searches those segments, so both the
+memory held and the time an insertion takes depend on how many segments there
+are, and not on how many rectangles have been packed.
 
-The cost of an insertion follows the same quantity, and not how many rectangles
-are already packed: a wider strip makes each insertion dearer, and a longer run
-of insertions does not.
+The strip bounds that number. In a strip 1000 wide where every dimension is a
+multiple of 100, a segment can only start at a multiple of 100, so there are
+never more than ten, whether ten rectangles have been packed or a million.
 
 ## API
 
 Two classes with the same shape. `BestFitStripPackRotatable` differs only in
 what `insert` accepts and returns.
 
-| Member                       | Cost   | Notes                                             |
-| ---------------------------- | ------ | ------------------------------------------------- |
-| `new BestFitStripPack(w)`    | `O(1)` | `w` is fixed for the life of the instance         |
-| `insert(width, height)`      | `O(m)` | `m` = skyline segments; `O(m²)` in the worst case |
-| `packedWidth` `packedHeight` | `O(1)` | Both only grow, until `reset()`                   |
-| `stripWidth`                 | `O(1)` | The `w` given to the constructor                  |
-| `reset()`                    | `O(m)` | Empties the strip, keeping the width              |
+| Member                       | Cost (typical) | Cost (worst) | Notes                                                       |
+| ---------------------------- | -------------- | ------------ | ----------------------------------------------------------- |
+| `new BestFitStripPack(w)`    | `O(1)`         | `O(1)`       | `w` is fixed for the life of the instance                   |
+| `packedWidth` `packedHeight` | `O(1)`         | `O(1)`       | Both only grow, until `reset()`                             |
+| `stripWidth`                 | `O(1)`         | `O(1)`       | The `w` given to the constructor                            |
+| `insert(width, height)`      | `O(m)`         | `O(m²)`      | `m` = skyline segments; `O(log m)` while the floor has room |
+| `reset()`                    | `O(m)`         | `O(m)`       | Empties the strip, keeping the strip width                  |
 
-`insert` returns `{ x, y }`, or `{ x, y, rotated }` from the rotatable class,
-and throws `TypeError` on a non-numeric dimension and `RangeError` on one that
-is not positive or does not fit the strip.
+`insert` returns `{ x, y }`, or `{ x, y, rotated }` from the rotatable class. It
+throws `TypeError` on a non-numeric dimension, and `RangeError` on one that is
+not positive or does not fit the strip (from the rotatable class, when neither
+dimension fits).
 
-## When not to use it
+## What the approach rules out
 
-The packer places each rectangle once and keeps nothing but the profile. What
-follows are the cases where that is the wrong trade.
+The package implements, in its online form, the best-fit heuristic for strip
+packing described by Shinji Imahori and Mutsunori Yagiura in
+[_The best-fit heuristic for the rectangular strip packing problem: an
+efficient implementation and the worst-case approximation ratio_](https://doi.org/10.1016/j.cor.2009.05.008),
+Computers & Operations Research, 2010. Each of the four terms in that
+sentence rules a class of problem out:
 
-| If this describes the problem                     | Reach for                                                                                                                                                                                        |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| A placed rectangle must later be removed or moved | a repack from a list you keep — there is no `remove` and no handle to a placement, and the only way back is `reset()`                                                                            |
-| The layout must be read back from the packer      | that same list — each coordinate is returned once and not recorded                                                                                                                               |
-| Every rectangle is known before packing starts    | this packer over the input sorted by decreasing height — it never sorts by itself, and sorted input covers noticeably more of the strip                                                          |
-| The packing must be optimal                       | an exact method such as branch-and-bound or an integer-programming model, on inputs small enough for one — strip packing is NP-hard, and this is a heuristic that leaves part of the strip empty |
-| The strip has a maximum height                    | a two-dimensional bin-packing algorithm, which opens a new bin when a rectangle does not fit the open ones — the strip is unbounded, and a rectangle is never rejected for being too tall        |
+| Term          | What it rules out                                                                                                                                   | Use instead                                                                                                          |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Strip packing | A maximum height. The strip is unbounded, and no rectangle is rejected for making the packing too tall.                                             | A two-dimensional bin-packing algorithm, which opens a new bin when a rectangle does not fit the open ones           |
+| Heuristic     | An optimal packing. The problem is NP-hard, so a heuristic packs fast and may leave empty space that an optimal packing would fill.                 | An exact method such as branch-and-bound or an integer-programming model, on inputs small enough for one             |
+| Online        | Choosing the order. Rectangles are placed as they arrive and never reconsidered, so input known in advance is packed no better than if it were not. | An offline packer, or this one over the input sorted by decreasing height, which covers noticeably more of the strip |
+| Best fit      | Filling space below the top. Only the skyline is kept, so the space under a rectangle that bridges a lower segment is never offered again.          | A maximal-rectangles packer, which tracks every free rectangle rather than a skyline                                 |
+
+One more limit is a choice of this implementation rather than of the
+approach. A placement is final: the packer records none and has no `remove`,
+and the strip width is fixed for the life of the instance. A layout that must
+change is kept by the caller as a list of placements and repacked after
+`reset()`.
 
 ## Documentation
 
@@ -136,11 +152,6 @@ follows are the cases where that is the wrong trade.
   every signature and every type.
 - [Open an issue](https://github.com/styiannis/best-fit-strip-pack/issues)
   for a question or a bug report.
-
-The heuristic is the one described in Shinji Imahori and Mutsunori Yagiura,
-[_The best-fit heuristic for the rectangular strip packing problem: an
-efficient implementation and the worst-case approximation ratio_](https://doi.org/10.1016/j.cor.2009.05.008),
-Computers & Operations Research, 2010.
 
 Released under the
 [MIT License](https://github.com/styiannis/best-fit-strip-pack/blob/main/LICENSE).
