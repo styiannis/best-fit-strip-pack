@@ -52,6 +52,7 @@
     "dev": "node ./scripts/clear.cjs ./dist && rollup -c --watch",
     "check-declared-paths": "node ./scripts/check-declared-paths.cjs",
     "check-dist-loads": "node ./scripts/check-dist-loads.cjs",
+    "check-benchmarks-types": "tsc -p benchmarks",
     "check-types": "tsc --noEmit",
     "check-updates": "npx npm-check-updates@23",
     "clear": "node ./scripts/clear.cjs ./build ./code_documentation ./coverage_report ./dist",
