@@ -91,7 +91,8 @@ The same five rectangles reach 750 without rotation and 700 with it. That margin
 is a property of these five and not a guarantee: rotation helps most when the
 strip is narrow relative to the rectangles. On rectangles taller than they are
 wide it can finish _higher_ than the plain class, which could be a better choice
-for such input.
+for such input. [The placement write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/placement-algorithm.md#how-rotation-is-decided)
+measures both classes.
 
 ## What it stores, and what an insertion costs
 
@@ -105,6 +106,10 @@ are, and not on how many rectangles have been packed.
 The strip bounds that number. In a strip 1000 wide where every dimension is a
 multiple of 100, a segment can only start at a multiple of 100, so there are
 never more than ten, whether ten rectangles have been packed or a million.
+[The placement write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/placement-algorithm.md#what-the-search-costs)
+measures the cost, and
+[the architecture write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/architecture-and-api.md#what-it-costs-in-memory)
+the memory.
 
 ## API
 
@@ -146,8 +151,18 @@ and the strip width is fixed for the life of the instance. A layout that must
 change is kept by the caller as a list of placements and repacked after
 `reset()`.
 
+[The placement write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/placement-algorithm.md#how-good-the-packing-is)
+measures what sorting the input recovers, and
+[the FAQ](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/faq.md#the-space-under-a-rectangle-was-never-used-again)
+shows the space that best fit gives up.
+[Getting started](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/getting-started.md#keep-the-geometry-yourself)
+shows how to keep the list of placements.
+
 ## Documentation
 
+- [Guides, the placement rules, the FAQ and the architecture write-up](https://github.com/styiannis/best-fit-strip-pack/tree/main/docs) —
+  packing the first rectangles, where a rectangle goes and how good the result
+  is, the behaviour that surprises people, and how the library is built.
 - [The generated API reference](https://styiannis.github.io/best-fit-strip-pack/) —
   every signature and every type.
 - [Open an issue](https://github.com/styiannis/best-fit-strip-pack/issues)
