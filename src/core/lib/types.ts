@@ -36,8 +36,9 @@ export interface IPlacementPointRotatable extends IPlacementPoint {
  *
  * @typeParam HN - Type of associated heap node
  */
-export interface IDoublyListNode<HN extends IMinHeapNode = IMinHeapNode>
-  extends IDoublyLinkedListNode {
+export interface IDoublyListNode<
+  HN extends IMinHeapNode = IMinHeapNode,
+> extends IDoublyLinkedListNode {
   /**
    * Horizontal starting position of this column segment.
    */
@@ -69,8 +70,9 @@ export interface IDoublyListNode<HN extends IMinHeapNode = IMinHeapNode>
  *
  * @typeParam N - Type of nodes in the list
  */
-export interface IDoublyList<N extends IDoublyListNode = IDoublyListNode>
-  extends IDoublyLinkedList<N> {}
+export interface IDoublyList<
+  N extends IDoublyListNode = IDoublyListNode,
+> extends IDoublyLinkedList<N> {}
 
 /**
  * Potential placement position discovered during best-fit search.
@@ -78,8 +80,9 @@ export interface IDoublyList<N extends IDoublyListNode = IDoublyListNode>
  *
  * @typeParam LN - Type of list nodes involved
  */
-export interface IFitPosition<LN extends IDoublyListNode = IDoublyListNode>
-  extends IPlacementPoint {
+export interface IFitPosition<
+  LN extends IDoublyListNode = IDoublyListNode,
+> extends IPlacementPoint {
   /**
    * List modification action required for placement:
    * - 'first-only': Modify only the first node
@@ -105,7 +108,7 @@ export interface IFitPosition<LN extends IDoublyListNode = IDoublyListNode>
  * @typeParam LN - Type of list nodes involved
  */
 export interface IFitPositionRotatable<
-  LN extends IDoublyListNode = IDoublyListNode
+  LN extends IDoublyListNode = IDoublyListNode,
 > extends IFitPosition<LN> {
   /**
    * Whether rectangle rotation is required for this placement.

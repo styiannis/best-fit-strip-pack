@@ -28,7 +28,7 @@ describe.each([
         instance.stripWidth === stripWidth
     ).toBe(true);
 
-    expect(instance.heap.length).toBe(instance.list.size);
+    expect(instance.heap).toHaveLength(instance.list.size);
   });
 
   it('Packed rectangles in two columns at most', () => {
@@ -59,7 +59,7 @@ describe.each([
       }
 
       expect(instance.list.head?.heapNode.key).toBe(lines);
-      expect(instance.heap.length).toBe(instance.list.size);
+      expect(instance.heap).toHaveLength(instance.list.size);
     }
   });
 });

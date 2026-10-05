@@ -1,10 +1,12 @@
 import { arraysEqual } from './arraysEqual';
 
+const stringSort = (a: string, b: string) => a.localeCompare(b);
+
 function isValidHeapObjectInstance(
   instance: any,
   instanceType: 'min-heap' | 'min-heap-node'
 ) {
-  const propNames = Object.getOwnPropertyNames(instance).sort();
+  const propNames = Object.getOwnPropertyNames(instance).sort(stringSort);
 
   if (instanceType === 'min-heap') {
     return (
@@ -30,7 +32,7 @@ function isValidListObjectInstance(
     return false;
   }
 
-  const propNames = Object.getOwnPropertyNames(instance).sort();
+  const propNames = Object.getOwnPropertyNames(instance).sort(stringSort);
 
   return instanceType === 'doubly-list'
     ? arraysEqual(propNames, ['head', 'size', 'tail'])
@@ -48,7 +50,7 @@ function isValidPointObjectInstance(
     return false;
   }
 
-  const propNames = Object.getOwnPropertyNames(instance).sort();
+  const propNames = Object.getOwnPropertyNames(instance).sort(stringSort);
 
   return instanceType === 'placement-point'
     ? arraysEqual(propNames, ['x', 'y'])
@@ -56,7 +58,7 @@ function isValidPointObjectInstance(
 }
 
 function isValidPositionObjectInstance(instance: any) {
-  const propNames = Object.getOwnPropertyNames(instance).sort();
+  const propNames = Object.getOwnPropertyNames(instance).sort(stringSort);
   return (
     'object' === typeof instance &&
     Object.prototype === Object.getPrototypeOf(instance) &&
@@ -65,7 +67,7 @@ function isValidPositionObjectInstance(instance: any) {
 }
 
 function isValidStripPackObjectInstance(instance: any) {
-  const propNames = Object.getOwnPropertyNames(instance).sort();
+  const propNames = Object.getOwnPropertyNames(instance).sort(stringSort);
   return (
     'object' === typeof instance &&
     Object.prototype === Object.getPrototypeOf(instance) &&
