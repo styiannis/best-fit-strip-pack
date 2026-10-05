@@ -1,11 +1,12 @@
 # Architecture and API
 
-**Last verified:** 2026-10-04 · v1.3.0
+**Last verified:** 2026-10-05 · v1.3.0
 
 ## What one packer holds
 
 A packer keeps no record of the rectangles it has placed. Its whole state is the
-skyline of the packing and three numbers, five fields in all:
+skyline of the packing — the top edge of everything packed so far — and three
+numbers, five fields in all:
 
 ```typescript
 export interface IBestFitStripPack {
@@ -17,12 +18,16 @@ export interface IBestFitStripPack {
 }
 ```
 
-The list is the skyline, left to right: one node per segment, carrying its `x`,
-its `width` and a pointer to a heap node. The heap holds those heap nodes,
-ordered by height, each carrying its `key` — the height of the segment — and a
-pointer back to the list node. Every segment is therefore one list node and one
-heap node that name each other, created together in `createRecord` and destroyed
-together in `removeRecord`.
+The skyline is a sequence of **segments**, each a stretch of that top edge with
+one height. A segment belongs to the profile, not to a rectangle: neighbouring
+rectangles of equal height form one segment. Each segment is stored twice. The
+list holds the segments from left to right, and a list node records its
+segment's `x`, the distance from the strip's left end to where the segment
+starts, and its `width`. The heap holds the same segments ordered by height, and
+a heap node carries its segment's height as its `key`. The two nodes of a
+segment point at each other, so every segment is one list node and one heap
+node, created together in `createRecord` and destroyed together in
+`removeRecord`.
 
 The pairing is what makes an edit local. Raising a segment is a `key` change
 that the heap repairs in `O(log m)`. Removing one is a detach from the list and
@@ -170,7 +175,7 @@ packed.
 The floor case is the cheap one: a width comparison, and either a widened tail
 segment or one new segment added to both structures. The search case is the
 expensive one, and its `m` is bounded by the shape of the profile rather than by
-the length of the run — 20,000 insertions into a strip 1,000 wide averaged 29.0
+the number of insertions — 20,000 of them into a strip 1,000 wide averaged 29.0
 segments and never exceeded 45. The rotatable class searches twice only when
 both orientations fit the width. When one side is wider than the strip, only the
 other orientation is searched.

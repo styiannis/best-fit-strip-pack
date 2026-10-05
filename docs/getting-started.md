@@ -3,7 +3,7 @@
 From an empty strip to a packed sheet: how to insert rectangles, what the
 coordinates mean, when the packer rotates something, and what it refuses.
 
-**Last verified:** 2026-10-04 · v1.3.0 · Node ≥ 18.12
+**Last verified:** 2026-10-05 · v1.3.0 · Node ≥ 18.12
 
 ## Install
 
@@ -19,8 +19,8 @@ works with either module system.
 ## Pack the first rectangles
 
 A packer is created around one number, the width of the strip, and that number
-does not change afterwards. Each `insert` takes a width and a height and returns
-the position it chose for the bottom-left corner:
+does not change afterwards. Each `insert(width, height)` returns the position it
+chose for the rectangle's bottom-left corner:
 
 ```typescript
 import { BestFitStripPack } from 'best-fit-strip-pack';
@@ -39,8 +39,8 @@ wide and 50 tall. `packedWidth` is how much of the fixed width has been reached
 and `packedHeight` how far the packing has grown. Both are read-only and neither
 decreases except through `reset()`.
 
-The direction `y` grows in is yours to decide. The packer produces numbers from
-a corner. Whether that corner is the top-left of a page or the bottom-left of a
+Which way `y` grows is yours to decide. The packer produces numbers from a
+corner. Whether that corner is the top-left of a page or the bottom-left of a
 canvas is a question about your renderer, not about the packing.
 
 ## Where the fourth rectangle goes
@@ -63,7 +63,7 @@ console.log(strip.insert(20, 40)); // { x: 70, y: 20 }
 console.log(strip.packedWidth, strip.packedHeight); // 100 75
 ```
 
-The 50×25 is wider than any gap, so it sits at the height of the tallest
+The 50×25 is wider than any gap, so it is placed at the height of the tallest
 rectangle beneath it. The 20×40 is the interesting one: it fits in the 30-wide
 gap above the third rectangle, whose surface is at 20, and the packer puts it
 there instead of stacking it on top. That choice — the lowest position the
@@ -79,13 +79,16 @@ placed, so if you need the rectangles later, collect them as you go:
 import { BestFitStripPack } from 'best-fit-strip-pack';
 
 const placed: { w: number; h: number; x: number; y: number }[] = [];
+
 const sheet = new BestFitStripPack(100);
 
-for (const [w, h] of [
+const rects: [number, number][] = [
   [40, 30],
   [30, 50],
   [30, 20],
-] as [number, number][]) {
+];
+
+for (const [w, h] of rects) {
   placed.push({ w, h, ...sheet.insert(w, h) });
 }
 
@@ -206,9 +209,9 @@ The full list of conditions, with the exact message each one produces, is in
 
 ## What this page did not cover
 
-[faq.md](faq.md) answers why a rectangle went on top although there was room
-lower down, why the rotatable class rotates a rectangle you did not ask it to,
-and how it behaves with fractional dimensions.
+[faq.md](faq.md) answers why a rectangle went back to the bottom of a strip that
+is already tall, why the space under a rectangle is never used again, and how
+the packer behaves with fractional dimensions.
 [placement-algorithm.md](placement-algorithm.md) explains how a position is
 chosen and what it costs to find.
 [architecture-and-api.md](architecture-and-api.md) covers the two layers, the

@@ -3,7 +3,7 @@
 Behaviours that surprise people, every error the library throws, and the
 integration questions the package shape raises.
 
-**Last verified:** 2026-10-04 · v1.3.0
+**Last verified:** 2026-10-05 · v1.3.0
 
 ## Behaviour
 
@@ -27,33 +27,10 @@ The 50×4 did not fit in the 40 units left on the floor and was placed by best
 fit, on top of the first rectangle. The 30×3 did fit, so it went back down. The
 rule applies for the life of the packer, not only to the first few insertions.
 
-### It went on top although there was clearly room lower down
-
-A rectangle has to sit on a **contiguous** run of the profile that is wide
-enough for it, and it sits at the height of the tallest segment in that run. Two
-low patches on either side of a tall one are not one place:
-
-```typescript
-import { BestFitStripPack } from 'best-fit-strip-pack';
-
-const strip = new BestFitStripPack(100);
-
-strip.insert(30, 10);
-strip.insert(40, 40);
-strip.insert(30, 10);
-console.log(strip.packedHeight); // 40
-
-console.log(strip.insert(80, 5)); // { x: 0, y: 40 }
-```
-
-The 80-wide rectangle would have to span all three segments, and the middle one
-is at 40, so 40 is where it goes. The two 30-wide patches of low ground stay
-where they are, available to anything narrow enough to use them.
-
 ### The space under a rectangle was never used again
 
 The packer no longer knows it is there. A rectangle that spans a lower segment
-sits at the height of the tallest segment beneath it, and the skyline then
+is placed at the height of the tallest segment beneath it, and the skyline then
 records only its top. The space between the lower segment and the rectangle's
 underside is not part of the profile, so no later search can offer it:
 
@@ -99,7 +76,7 @@ No. `stripWidth` is a getter over a value fixed by the constructor, and
 
 Only once the packing has reached the right-hand edge. Until then it is how far
 the used region extends, and it can grow during a best-fit placement: if the
-lowest run ends at the right-hand end of the used width and the strip has
+lowest span ends at the right-hand end of the used width and the strip has
 untouched width beyond it, the rectangle takes some of that width instead of
 going higher.
 
@@ -108,20 +85,31 @@ import { BestFitStripPack } from 'best-fit-strip-pack';
 
 const strip = new BestFitStripPack(100);
 
-strip.insert(65, 20);
-strip.insert(25, 5);
-console.log(strip.packedWidth); // 90
+console.log(strip.insert(65, 20)); // { x: 0, y: 0 }
+console.log(strip.insert(25, 5)); // { x: 65, y: 0 }
+console.log(strip.packedWidth, strip.packedHeight); // 90 20
 
-strip.insert(30, 10);
-console.log(strip.packedWidth); // 95
+console.log(strip.insert(30, 10)); // { x: 65, y: 5 }
+console.log(strip.packedWidth, strip.packedHeight); // 95 20
+
+console.log(strip.insert(5, 30)); // { x: 95, y: 0 }
+console.log(strip.packedWidth, strip.packedHeight); // 100 30
 ```
 
-Neither dimension ever decreases, except through `reset()`.
+The 30×10 is wider than the 25-wide segment at height 5, but that segment ends
+where the used width ends. The rectangle therefore extends 5 units into
+untouched width rather than going on top of the 65×20: `packedWidth` grows and
+`packedHeight` does not. The 5×30 fits in the last 5 units of the floor, so it
+goes to `y = 0`, and only then does `packedWidth` equal the strip width. After
+that, only `reset()` changes it.
 
 ### Do fractional dimensions work?
 
-Yes. Nothing rounds or truncates, and nothing requires integers. The consequence
-is ordinary binary floating point, accumulated across insertions:
+Yes. The packer only adds, subtracts and compares the numbers it is given, and
+nothing rounds, truncates or requires integers. How exact the positions are
+therefore depends on those numbers and on JavaScript's number type, not on the
+algorithm. Decimal fractions carry the usual binary rounding error, accumulated
+across insertions:
 
 ```typescript
 import { BestFitStripPack } from 'best-fit-strip-pack';
@@ -133,51 +121,43 @@ console.log(unit.insert(0.2, 1)); // { x: 0.1, y: 0 }
 console.log(unit.packedWidth); // 0.30000000000000004
 ```
 
-If exact edges matter — CSS pixels, print units — pack in integers and scale the
-results afterwards.
-
-### Why did `rotated` come back `true` when I did not ask for rotation?
-
-Because `BestFitStripPackRotatable` decides for itself. That is the difference
-between the two classes. While the floor has room it puts the longer side along
-the width, so a tall rectangle is laid on its side:
-
-```typescript
-import {
-  BestFitStripPack,
-  BestFitStripPackRotatable,
-} from 'best-fit-strip-pack';
-
-const rot = new BestFitStripPackRotatable(100);
-console.log(rot.insert(20, 70)); // { x: 0, y: 0, rotated: true }
-
-const plain = new BestFitStripPack(100);
-console.log(plain.insert(20, 70)); // { x: 0, y: 0 }
-```
-
-`BestFitStripPack` never rotates anything, and its result has no `rotated` field
-at all. Use it when the orientation is yours to keep.
+The choice of units is the caller's. Dimensions expressed in a unit that makes
+them integers give exact positions, which can be scaled afterwards.
 
 ### Does rotation always give a shorter packing?
 
-No. It changes the shape of the profile, and the outcome depends on the input.
-Over 10,000 rectangles 20 to 40 wide and 60 to 90 tall in a strip 1,000 wide,
-the rotatable variant finished 2.4% **higher** than the plain one. Over 10,000
-rectangles 5 to 84 wide and 5 to 64 tall in a strip 100 wide, it finished 11.5%
-lower. [placement-algorithm.md](placement-algorithm.md) has the full comparison.
-Measure it on your own data before assuming it helps.
+No, and nothing guarantees it. The rotatable class decides each rectangle's
+orientation when it arrives, without regard to the rectangles that follow.
 
-### It accepted a rectangle taller than the strip is wide
+Measurement shows that it can lose. Over 10,000 rectangles 20 to 40 wide and 60
+to 90 tall in a strip 1,000 wide, the rotatable class finished 2.4% **higher**
+than the plain one.
+[placement-algorithm.md](placement-algorithm.md#how-rotation-is-decided)
+compares four inputs, including those where rotation helps.
 
-That is correct: the strip is unbounded in height by construction, so only the
-width is constrained. `insert(10, 4000)` into a strip 100 wide succeeds and
-leaves `packedHeight` at 4000. The rotatable class checks that **at least one**
-dimension fits the width, since it may rotate.
+Beyond that, only a test on your own data shows which class packs it lower.
 
-### Two gaps look identical — which one is used?
+### Two gaps are at the same height — which one is used?
 
 The left one. Candidates are scored by the height they would place the rectangle
-at, and equal heights are broken by the smaller `x`.
+at and by nothing else, and equal heights are broken by the smaller `x`:
+
+```typescript
+import { BestFitStripPack } from 'best-fit-strip-pack';
+
+const strip = new BestFitStripPack(100);
+
+console.log(strip.insert(30, 20)); // { x: 0, y: 0 }
+console.log(strip.insert(20, 10)); // { x: 30, y: 0 }
+console.log(strip.insert(10, 40)); // { x: 50, y: 0 }
+console.log(strip.insert(20, 10)); // { x: 60, y: 0 }
+console.log(strip.insert(20, 40)); // { x: 80, y: 0 }
+
+console.log(strip.insert(20, 5)); // { x: 30, y: 10 }
+```
+
+The gaps at `x = 30` and `x = 60` are both 20 wide at height 10, and the 20×5
+fills either exactly, so it takes the left one.
 
 ### Does inserting ever move something already placed?
 
@@ -187,8 +167,7 @@ fresh instance always produces the same coordinates.
 
 ## Errors
 
-Every failure is an exception thrown before anything is placed. There is no
-error return and no silent rejection.
+Every failure is an exception thrown before anything is placed.
 
 | Call                                  | Condition                     | Error        | Message                                                                         |
 | ------------------------------------- | ----------------------------- | ------------ | ------------------------------------------------------------------------------- |
@@ -196,22 +175,18 @@ error return and no silent rejection.
 | `new BestFitStripPack(w)`             | `w <= 0`                      | `RangeError` | `Strip width value (0) should be greater than 0.`                               |
 | `insert(w, h)`                        | either not a number, or `NaN` | `TypeError`  | `Both dimensions (NaNx10) should be numerical values.`                          |
 | `insert(w, h)`                        | either `<= 0`                 | `RangeError` | `Both dimensions (0x10) should be greater than 0.`                              |
-| `insert(w, h)`                        | `w` exceeds the strip width   | `RangeError` | `Width (120) should not exceed strip width (100).`                              |
+| `insert(w, h)` on the plain class     | `w` exceeds the strip width   | `RangeError` | `Width (120) should not exceed strip width (100).`                              |
 | `insert(w, h)` on the rotatable class | **both** exceed the width     | `RangeError` | `At least one of the dimensions (120x110) should not exceed strip width (100).` |
 
-Both constructors validate the same way, and both classes validate dimensions on
-every `insert`. A `TypeError` message shows a number as it is and a string in
-quotes, so passing `"50"` produces
-`Both dimensions ("50"x10) should be numerical values.`. `null` appears as
-`null`, and any other value by its type: an object reads `object` and a symbol
-`symbol`.
+Both constructors validate the same way. A `TypeError` message shows a number as
+it is, a string in quotes (`"50"`), `null` as `null`, and any other value by its
+type, such as `object`.
 
-`Infinity` is not `NaN` and is not rejected as such. A strip constructed with an
-infinite width accepts every width that passes the checks above and never leaves
-`y = 0`. An infinite width on `insert` fails the comparison against the strip
-width in `BestFitStripPack`. `BestFitStripPackRotatable` rotates it instead,
-since the other side fits, and both classes accept an infinite height. Each of
-those placements leaves `packedHeight` at `Infinity`.
+`Infinity` passes the numeric checks. A strip of infinite width places every
+rectangle at `y = 0`. An infinite width on `insert` exceeds the strip width, so
+`BestFitStripPack` rejects it and `BestFitStripPackRotatable` rotates the
+rectangle when its height fits. Both classes accept an infinite height, which
+leaves `packedHeight` at `Infinity`.
 
 ## Environment and integration
 

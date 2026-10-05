@@ -5,7 +5,7 @@ could occupy, which one raises the top of the packing least? This page is the
 answer in full — the rules, the state it is computed from, what the search
 costs, and how good the result is.
 
-**Last verified:** 2026-10-04 · v1.3.0
+**Last verified:** 2026-10-05 · v1.3.0
 
 ## The skyline is the whole state
 
@@ -49,10 +49,10 @@ the case where that surprises people.
 
 When the floor is full, the search begins, and it considers one candidate per
 segment. From a segment, the packer walks left over every neighbour no taller
-than that segment, then right over neighbours of the same kind until the run is
-wide enough for the rectangle. That run is where the rectangle would sit, and
-the height it would sit at is the **tallest** segment in the run — it rests on
-the highest point beneath it.
+than that segment, then right over neighbours of the same kind until together
+they are wide enough for the rectangle. Those segments are the candidate's
+**span**. The rectangle would cover all of them and rest on the **tallest**, the
+highest point beneath it.
 
 Every candidate is scored by that height, and the lowest wins. Equal heights are
 broken by the smaller `x`, which makes the packing fill left to right:
@@ -74,7 +74,7 @@ console.log(strip.insert(25, 5)); // { x: 70, y: 10 }
 The two 10-high gaps at each end of the strip are indistinguishable by height,
 so the first 25×5 takes the left one and the second takes the other.
 
-One case lets a run be too narrow. If a run reaches the right-hand end of the
+One case lets a span be too narrow. If a span reaches the right-hand end of the
 used width before it is wide enough, and the strip still has untouched width
 beyond it, the rectangle may extend into that width — the packing gets wider
 rather than taller:
@@ -101,19 +101,19 @@ been placed on the profile instead, the packing would have grown to 30.
 Three shapes of edit cover every case, and which one applies is decided by the
 same search that chose the position.
 
-- **One segment.** The run is a single segment. If the rectangle is narrower
+- **One segment.** The span is a single segment. If the rectangle is narrower
   than it, the segment is split in two and only the left part is raised.
-- **Merge all.** The run is exactly as wide as the rectangle, or the rectangle
-  extends past the end of the used width. Every segment in the run collapses
+- **Merge all.** The span is exactly as wide as the rectangle, or the rectangle
+  extends past the end of the used width. Every segment in the span collapses
   into the first, which takes the rectangle's width and the new height.
-- **Merge and split the last.** The run is wider than the rectangle. Everything
+- **Merge and split the last.** The span is wider than the rectangle. Everything
   but the final segment collapses into the first, and the final segment keeps
   the leftover width, shifted to the right.
 
 Whichever applies, the neighbours on both sides are then checked and merged into
 the result if their heights now match. That is the step that keeps the segment
-count tied to the shape of the profile rather than to the length of the run: in
-the trace at the top of this page, five rectangles left four segments, and
+count tied to the shape of the profile rather than to the number of insertions:
+in the trace at the top of this page, five rectangles left four segments, and
 20,000 rectangles into the same strip 100 wide averaged 5.2 segments and never
 exceeded 13.
 
@@ -152,7 +152,8 @@ the best position found so far is rejected on one comparison, and every other
 one starts a walk over the neighbouring segments that are no taller than it. So
 the cost of an insertion is set by the number of segments — call it `m` — and
 not by how many rectangles have already been packed. It is `O(m)` in the typical
-case and `O(m²)` in the worst, when every segment's run spans the whole profile.
+case and `O(m²)` in the worst, when the walk from every segment covers the whole
+profile.
 
 `m` is governed by the strip width relative to the rectangles. Inserting 20,000
 rectangles 5 to 84 units wide and 5 to 64 tall, with the segment count sampled
@@ -207,7 +208,7 @@ polynomial-time method closes the remaining gap in general.
 
 ## Where it does badly
 
-A rectangle wider than every low run in a fragmented profile has nowhere to go
+A rectangle wider than every low span in a fragmented profile has nowhere to go
 but the top. It raises the packing by its full height, and where it spans a
 lower segment, the space between that segment and its underside is closed for
 good, because the skyline records only the rectangle's top. The
