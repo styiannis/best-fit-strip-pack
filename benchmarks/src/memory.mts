@@ -8,6 +8,10 @@
 // moving, takes a baseline, builds what it measures, collects again and
 // prints the difference. The input exists before the baseline and is kept
 // alive through both readings, so it is outside every figure.
+//
+// Besides the random input, it weighs the input that reaches the ceiling on
+// the segment count: one rectangle per unit of the strip's width, each one unit
+// wide and alternately 1 and 2 high, so that no two neighbours merge.
 
 import { fileURLToPath } from 'node:url';
 import { BestFitStripPack, segmentCounts } from './lib/package.mts';
@@ -16,6 +20,11 @@ import { childArgs, inChild } from './lib/process.mts';
 
 const STRIP = 1000;
 const PACKERS = 500;
+
+// The input that leaves one segment per unit of width.
+function ceiling() {
+  return Array.from({ length: STRIP }, (_, i): Rectangle => [1, (i % 2) + 1]);
+}
 
 function pack(input: Rectangle[]) {
   const strip = new BestFitStripPack(STRIP);
@@ -58,7 +67,7 @@ const args = childArgs();
 if (args) {
   const [scenario, n] = args as [string, string];
 
-  const input = rectangles(Number(n));
+  const input = n === 'ceiling' ? ceiling() : rectangles(Number(n));
 
   const before = settle();
   const held = (SCENARIOS[scenario] as (input: Rectangle[]) => unknown)(input);
@@ -70,7 +79,7 @@ if (args) {
 } else {
   const file = fileURLToPath(import.meta.url);
 
-  const bytes = (scenario: string, n: number) =>
+  const bytes = (scenario: string, n: number | string) =>
     inChild(file, [scenario, n], ['--expose-gc']);
 
   console.log(
@@ -86,6 +95,14 @@ if (args) {
     const segments = n === 0 ? 0 : segmentCounts(STRIP, rectangles(n)).at(-1);
     console.log(
       `  ${String(n).padEnd(12)}${kb.toFixed(1).padStart(6)}${String(segments).padStart(10)}`
+    );
+  }
+
+  {
+    const kb = bytes('packers', 'ceiling') / PACKERS / 1e3;
+    const segments = segmentCounts(STRIP, ceiling()).at(-1);
+    console.log(
+      `  ${'ceiling'.padEnd(12)}${kb.toFixed(1).padStart(6)}${String(segments).padStart(10)}`
     );
   }
 

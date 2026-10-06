@@ -9,7 +9,7 @@ integration questions the package shape raises.
 
 ### A rectangle went to the bottom of a strip that is already tall
 
-Because the bottom still had room. Before searching the profile at all, `insert`
+Because the bottom still had room. Before searching the skyline at all, `insert`
 checks whether the rectangle fits in the width that has never been used, and
 places it there at `y = 0` if it does:
 
@@ -32,7 +32,7 @@ rule applies for the life of the packer, not only to the first few insertions.
 The packer no longer knows it is there. A rectangle that spans a lower segment
 is placed at the height of the tallest segment beneath it, and the skyline then
 records only its top. The space between the lower segment and the rectangle's
-underside is not part of the profile, so no later search can offer it:
+underside is not part of the skyline, so no later search can offer it:
 
 ```typescript
 import { BestFitStripPack } from 'best-fit-strip-pack';
@@ -55,11 +55,11 @@ what a maximal-rectangles packer does.
 ### Can I remove a rectangle, or move one?
 
 No. The API is `insert`, `reset` and three getters. There is no handle to a
-placement and no `remove`. The packer stores the profile of what is filled, not
-the rectangles that filled it, and undoing one rectangle would require knowing
-what the profile looked like before it. Storing only the profile is a choice of
-this implementation, not of the best-fit heuristic. A layout that changes is
-repacked from a list you kept yourself.
+placement and no `remove`. The packer stores the skyline, not the rectangles
+that formed it, and undoing one rectangle would require knowing what the skyline
+looked like before it. Storing only the skyline is a choice of this
+implementation, not of the best-fit heuristic. A layout that changes is repacked
+from a list you kept yourself.
 
 ### Does the packer remember what it placed?
 
@@ -96,17 +96,18 @@ console.log(strip.insert(5, 30)); // { x: 95, y: 0 }
 console.log(strip.packedWidth, strip.packedHeight); // 100 30
 ```
 
-The 30×10 is wider than the 25-wide segment at height 5, but that segment ends
-where the used width ends. The rectangle therefore extends 5 units into
-untouched width rather than going on top of the 65×20: `packedWidth` grows and
-`packedHeight` does not. The 5×30 fits in the last 5 units of the floor, so it
-goes to `y = 0`, and only then does `packedWidth` equal the strip width. After
-that, only `reset()` changes it.
+The 30×10 needs 30 units and the segment at height 5 offers only 25. That
+segment, though, is the last one, and the 10 units after it, from 90 to 100,
+have never been used. The rectangle takes 5 of them and is placed at height 5
+rather than on top of the 65×20: `packedWidth` grows and `packedHeight` does
+not. The 5×30 fits in the last 5 units of the floor, so it goes to `y = 0`, and
+only then does `packedWidth` equal the strip width. After that, only `reset()`
+changes it.
 
 ### Do fractional dimensions work?
 
 Yes. The packer only adds, subtracts and compares the numbers it is given, and
-nothing rounds, truncates or requires integers. How exact the positions are
+nothing rounds, truncates or requires integers. The precision of the positions
 therefore depends on those numbers and on JavaScript's number type, not on the
 algorithm. Decimal fractions carry the usual binary rounding error, accumulated
 across insertions:
@@ -132,15 +133,16 @@ orientation when it arrives, without regard to the rectangles that follow.
 Measurement shows that it can lose. Over 10,000 rectangles 20 to 40 wide and 60
 to 90 tall in a strip 1,000 wide, the rotatable class finished 2.4% **higher**
 than the plain one.
-[placement-algorithm.md](placement-algorithm.md#how-rotation-is-decided)
-compares four inputs, including those where rotation helps.
+[quality-and-cost.md](quality-and-cost.md#when-rotation-helps) gives inputs
+where rotation helps and one where it raises the packing.
 
 Beyond that, only a test on your own data shows which class packs it lower.
 
 ### Two gaps are at the same height — which one is used?
 
-The left one. Candidates are scored by the height they would place the rectangle
-at and by nothing else, and equal heights are broken by the smaller `x`:
+The left one. The packer compares candidates only by the height at which the
+rectangle would be placed. When two candidates give the same height, it chooses
+the one with the smaller `x`, the one further left:
 
 ```typescript
 import { BestFitStripPack } from 'best-fit-strip-pack';
@@ -220,7 +222,7 @@ import {
 } from 'best-fit-strip-pack';
 ```
 
-The internal layer that the classes delegate to is not published.
+The internal layer that the classes delegate to is not exported.
 
 ### Will unused parts be dropped from my bundle?
 

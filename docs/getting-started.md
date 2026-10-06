@@ -39,14 +39,16 @@ wide and 50 tall. `packedWidth` is how much of the fixed width has been reached
 and `packedHeight` how far the packing has grown. Both are read-only and neither
 decreases except through `reset()`.
 
-Which way `y` grows is yours to decide. The packer produces numbers from a
-corner. Whether that corner is the top-left of a page or the bottom-left of a
-canvas is a question about your renderer, not about the packing.
+`x` is measured along the strip's width and `y` along its height, both from the
+corner where the packing starts. The packer calls that corner the bottom-left,
+but it computes distances, not directions. On a canvas whose `y` axis points
+down, the same numbers give each rectangle's top-left corner, and the packing
+grows down the page instead of up it.
 
 ## Where the fourth rectangle goes
 
-The bottom row is full, so the next insertions have to find space in the profile
-the first three left behind:
+The bottom row is full, so the next insertions have to find space on the
+**skyline** the first three left behind, the outline formed by their tops:
 
 ```typescript
 import { BestFitStripPack } from 'best-fit-strip-pack';
@@ -68,7 +70,8 @@ rectangle beneath it. The 20×40 is the interesting one: it fits in the 30-wide
 gap above the third rectangle, whose surface is at 20, and the packer puts it
 there instead of stacking it on top. That choice — the lowest position the
 rectangle fits in rather than the next free one — is what best fit means, and
-[placement-algorithm.md](placement-algorithm.md) describes how it is found.
+[quality-and-cost.md](quality-and-cost.md) measures how close it comes to the
+lowest packing possible.
 
 ## Keep the geometry yourself
 
@@ -105,9 +108,9 @@ that changes is repacked from a list you kept, not edited in place.
 
 ## Expect the floor to be used first
 
-One rule surprises people. As long as a rectangle still fits in the unused width
-at the right-hand end of the strip, it goes there, at `y = 0`, however tall the
-packing has already grown:
+As long as a rectangle still fits in the unused width at the right-hand end of
+the strip, it goes there, at `y = 0`, however tall the packing has already
+grown:
 
 ```typescript
 import { BestFitStripPack } from 'best-fit-strip-pack';
@@ -194,7 +197,7 @@ try {
 ```
 
 Height is not checked against the strip width, because the strip has no maximum
-height. A rectangle taller than the strip is wide is packed without complaint:
+height. A rectangle taller than the strip's width is packed without complaint:
 
 ```typescript
 import { BestFitStripPack } from 'best-fit-strip-pack';
@@ -212,7 +215,7 @@ The full list of conditions, with the exact message each one produces, is in
 [faq.md](faq.md) answers why a rectangle went back to the bottom of a strip that
 is already tall, why the space under a rectangle is never used again, and how
 the packer behaves with fractional dimensions.
-[placement-algorithm.md](placement-algorithm.md) explains how a position is
-chosen and what it costs to find.
-[architecture-and-api.md](architecture-and-api.md) covers the two layers, the
-data structures underneath and what a packer retains in memory.
+[quality-and-cost.md](quality-and-cost.md) measures how good the packings are
+and what an insertion costs in time and memory.
+[architecture-and-api.md](architecture-and-api.md) covers the data structures
+underneath and the two layers built on them.

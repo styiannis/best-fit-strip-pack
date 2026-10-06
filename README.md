@@ -91,7 +91,7 @@ The same five rectangles reach 750 without rotation and 700 with it. That margin
 is a property of these five and not a guarantee: rotation helps most when the
 strip is narrow relative to the rectangles. On rectangles taller than they are
 wide it can finish _higher_ than the plain class, which could be a better choice
-for such input. [The placement write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/placement-algorithm.md#how-rotation-is-decided)
+for such input. [The write-up on packing quality and cost](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/quality-and-cost.md#when-rotation-helps)
 measures both classes.
 
 ## What it stores, and what an insertion costs
@@ -106,10 +106,8 @@ are, and not on how many rectangles have been packed.
 The strip bounds that number. In a strip 1000 wide where every dimension is a
 multiple of 100, a segment can only start at a multiple of 100, so there are
 never more than ten, whether ten rectangles have been packed or a million.
-[The placement write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/placement-algorithm.md#what-the-search-costs)
-measures the cost, and
-[the architecture write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/architecture-and-api.md#what-it-costs-in-memory)
-the memory.
+[The write-up on packing quality and cost](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/quality-and-cost.md#what-an-insertion-costs)
+measures both.
 
 ## API
 
@@ -129,14 +127,20 @@ throws `TypeError` on a non-numeric dimension, and `RangeError` on one that is
 not positive or does not fit the strip (from the rotatable class, when neither
 dimension fits).
 
+[The write-up on packing quality and cost](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/quality-and-cost.md#what-an-insertion-costs)
+explains the costs of `insert` and `reset`, and gives the input that makes
+`insert` quadratic.
+
 ## What the approach rules out
 
 The package implements, in its online form, the best-fit heuristic for strip
 packing described by Shinji Imahori and Mutsunori Yagiura in
 [_The best-fit heuristic for the rectangular strip packing problem: an
 efficient implementation and the worst-case approximation ratio_](https://doi.org/10.1016/j.cor.2009.05.008),
-Computers & Operations Research, 2010. Each of the four terms in that
-sentence rules a class of problem out:
+Computers & Operations Research, 2010. There, the lowest segment of the skyline
+chooses its rectangle from all those not yet placed. In the online form, each
+rectangle chooses its position as it arrives. Each of the four terms in the
+first sentence rules a class of problem out:
 
 | Term          | What it rules out                                                                                                                                   | Use instead                                                                                                          |
 | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
@@ -151,7 +155,7 @@ and the strip width is fixed for the life of the instance. A layout that must
 change is kept by the caller as a list of placements and repacked after
 `reset()`.
 
-[The placement write-up](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/placement-algorithm.md#how-good-the-packing-is)
+[The write-up on packing quality and cost](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/quality-and-cost.md#what-the-input-order-costs)
 measures what sorting the input recovers, and
 [the FAQ](https://github.com/styiannis/best-fit-strip-pack/blob/main/docs/faq.md#the-space-under-a-rectangle-was-never-used-again)
 shows the space that best fit gives up.
@@ -160,9 +164,9 @@ shows how to keep the list of placements.
 
 ## Documentation
 
-- [Guides, the placement rules, the FAQ and the architecture write-up](https://github.com/styiannis/best-fit-strip-pack/tree/main/docs) —
-  packing the first rectangles, where a rectangle goes and how good the result
-  is, the behaviour that surprises people, and how the library is built.
+- [Guides, packing quality and cost, the FAQ and the architecture write-up](https://github.com/styiannis/best-fit-strip-pack/tree/main/docs) —
+  packing the first rectangles, how good the result is and what it costs, the
+  behaviour that surprises people, and how the library is built.
 - [The generated API reference](https://styiannis.github.io/best-fit-strip-pack/) —
   every signature and every type.
 - [Open an issue](https://github.com/styiannis/best-fit-strip-pack/issues)

@@ -1,11 +1,11 @@
 # Best-Fit Strip Pack - Documentation
 
-| Document                                        | The question it answers                                    |
-| ----------------------------------------------- | ---------------------------------------------------------- |
-| [Getting started](getting-started.md)           | How do I install it and pack my first rectangles?          |
-| [Placement algorithm](placement-algorithm.md)   | Where does it put a rectangle, and how good is the result? |
-| [FAQ](faq.md)                                   | It did something I did not expect, or it threw — why?      |
-| [Architecture and API](architecture-and-api.md) | How is the library built, and what does it cost?           |
+| Document                                        | The question it answers                                     |
+| ----------------------------------------------- | ----------------------------------------------------------- |
+| [Getting started](getting-started.md)           | How do I install it and pack my first rectangles?           |
+| [Quality and cost](quality-and-cost.md)         | How good are its packings, and what does an insertion cost? |
+| [FAQ](faq.md)                                   | It did something I did not expect, or it threw — why?       |
+| [Architecture and API](architecture-and-api.md) | How is the library built, and what does it expose?          |
 
 The scripts behind every measured figure are in
 [`benchmarks/`](../benchmarks/README.md).
